@@ -59,8 +59,8 @@ TAU_LOSS = 0.005
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/count/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/count/best_model")
+EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_ttfs/output_metrics")
+SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_ttfs/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
