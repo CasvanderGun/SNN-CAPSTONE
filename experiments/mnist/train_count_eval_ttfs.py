@@ -49,8 +49,13 @@ LEARNING_RATE = 0.003
 LR_DECAY_EPOCH = 10  # Perform decay very n epochs
 LR_DECAY_FACTOR = 1.0
 MIN_LEARNING_RATE = 0
+
+# SPIKE COUNT
 TARGET_FALSE = 3
 TARGET_TRUE = 15
+
+# TIME TO FIRST SPIKE
+TAU_LOSS = 0.005
 
 # Plot parameters
 EXPORT_METRICS = True
@@ -99,41 +104,57 @@ if __name__ == "__main__":
     network.add_layer(output_layer)
 
     loss_fct = SpikeCountClassLoss(target_false=TARGET_FALSE, target_true=TARGET_TRUE)
+    eval_loss_fct = TTFSSoftmaxCrossEntropy(tau=TAU_LOSS) ##NIEUW
     optimizer = AdamOptimizer(learning_rate=LEARNING_RATE)
 
-    # Metrics
+    # EVALUATING ON TRAINING DATA WITH TRAINING LOSS FUNCTION
     training_steps = 0
-    train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_train")
-    train_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_train")
-    train_silent_label_monitor = SilentLabelsMonitor()
-    train_time_monitor = TimeMonitor()
-    train_monitors_manager = MonitorsManager([train_loss_monitor,
-                                              train_accuracy_monitor,
-                                              train_silent_label_monitor,
-                                              train_time_monitor],
-                                             print_prefix="Train | ")
+    train_train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "train_train_loss_loss")
+    train_train_loss_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "train_train_loss_accuracy")
+    train_train_loss_silent_label_monitor = SilentLabelsMonitor()
+    train_train_loss_time_monitor = TimeMonitor()
+    train_train_loss_monitors_manager = MonitorsManager([train_train_loss_monitor,
+                                                         train_train_loss_accuracy_monitor,
+                                                         train_train_loss_silent_label_monitor,
+                                                         train_train_loss_time_monitor],
+                                                         print_prefix="Train on train loss function | ")
 
-    test_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_test")
-    test_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_test")
-    test_learning_rate_monitor = ValueMonitor(name="Learning rate", decimal=5)
-    # Only monitor LIF layers
-    test_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
+    
+    # EVALUATING ON TEST DATA WITH TRAINING LOSS FUNCTION
+    test_train_loss_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "test_train_loss_loss")
+    test_train_loss_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "test_train_loss_accuracy")
+    test_train_loss_learning_rate_monitor = ValueMonitor(name="Learning rate", decimal=5)
+    test_train_loss_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_train_loss_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_train_loss_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
                           for l in network.layers if isinstance(l, LIFLayer)}
-    test_time_monitor = TimeMonitor()
-    all_test_monitors = [test_loss_monitor, test_accuracy_monitor, test_learning_rate_monitor]
-    all_test_monitors.extend(test_spike_counts_monitors.values())
-    all_test_monitors.extend(test_silent_monitors.values())
-    all_test_monitors.extend(test_norm_monitors.values())
-    all_test_monitors.append(test_time_monitor)
-    test_monitors_manager = MonitorsManager(all_test_monitors,
-                                            print_prefix="Test | ")
+    test_train_loss_time_monitor = TimeMonitor()
+    all_test_train_loss_monitors = [test_train_loss_loss_monitor, test_train_loss_accuracy_monitor, test_train_loss_learning_rate_monitor]
+    all_test_train_loss_monitors.extend(test_train_loss_spike_counts_monitors.values())
+    all_test_train_loss_monitors.extend(test_train_loss_silent_monitors.values())
+    all_test_train_loss_monitors.extend(test_train_loss_norm_monitors.values())
+    all_test_train_loss_monitors.append(test_train_loss_time_monitor)
+    train_eval_monitors_manager = MonitorsManager(all_test_train_loss_monitors,
+                                                  print_prefix="Test on train loss function| ")
+    
+
+    # EVALUATING ON TEST DATA WITH EVALUATION LOSS FUNCTION
+    test_eval_loss_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "test_eval_loss_loss") 
+    test_eval_loss_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "test_eval_loss_accuracy")
+    test_eval_loss_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_eval_loss_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_eval_loss_time_monitor = TimeMonitor()
+    all_test_eval_loss_monitors = [test_eval_loss_loss_monitor, test_eval_loss_accuracy_monitor]
+    all_test_eval_loss_monitors.extend(test_eval_loss_spike_counts_monitors.values())
+    all_test_eval_loss_monitors.extend(test_eval_loss_silent_monitors.values())
+    all_test_eval_loss_monitors.append(test_eval_loss_time_monitor)
+    test_eval_loss_monitors_manager = MonitorsManager(all_test_eval_loss_monitors,
+                                            print_prefix="Test on eval loss function | ")
 
     best_acc = 0.0
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
-        train_time_monitor.start()
+        train_train_loss_time_monitor.start()
         dataset.shuffle()
 
         # Learning rate decay
@@ -158,9 +179,9 @@ if __name__ == "__main__":
             n_out_spikes_cpu = n_out_spikes.get()
 
             # Update monitors
-            train_loss_monitor.add(loss_cpu)
-            train_accuracy_monitor.add(pred_cpu, labels)
-            train_silent_label_monitor.add(n_out_spikes_cpu, labels)
+            train_train_loss_monitor.add(loss_cpu)
+            train_train_loss_accuracy_monitor.add(pred_cpu, labels)
+            train_train_loss_silent_label_monitor.add(n_out_spikes_cpu, labels)
 
             # Compute gradient
             gradient = network.backward(errors)
@@ -181,13 +202,13 @@ if __name__ == "__main__":
             if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
                 # Compute metrics
 
-                train_monitors_manager.record(epoch_metrics)
-                train_monitors_manager.print(epoch_metrics)
-                train_monitors_manager.export()
+                train_train_loss_monitors_manager.record(epoch_metrics)
+                train_train_loss_monitors_manager.print(epoch_metrics)
+                train_train_loss_monitors_manager.export()
 
             # Test evaluation
             if training_steps % TEST_PERIOD_STEP == 0:
-                test_time_monitor.start()
+                test_eval_time_monitor.start()
                 for batch_idx in range(N_TEST_BATCH):
                     spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
                     network.reset()
@@ -199,25 +220,25 @@ if __name__ == "__main__":
 
                     pred_cpu = pred.get()
                     loss_cpu = loss.get()
-                    test_loss_monitor.add(loss_cpu)
-                    test_accuracy_monitor.add(pred_cpu, labels)
+                    test_eval_loss_monitor.add(loss_cpu)
+                    test_eval_accuracy_monitor.add(pred_cpu, labels)
 
-                    for l, mon in test_spike_counts_monitors.items():
+                    for l, mon in test_eval_spike_counts_monitors.items():
                         mon.add(l.spike_trains[1])
 
-                    for l, mon in test_silent_monitors.items():
+                    for l, mon in test_eval_silent_monitors.items():
                         mon.add(l.spike_trains[1])
 
-                for l, mon in test_norm_monitors.items():
+                for l, mon in test_eval_norm_monitors.items():
                     mon.add(l.weights)
 
-                test_learning_rate_monitor.add(optimizer.learning_rate)
+                test_eval_learning_rate_monitor.add(optimizer.learning_rate)
 
-                records = test_monitors_manager.record(epoch_metrics)
-                test_monitors_manager.print(epoch_metrics)
-                test_monitors_manager.export()
+                records = train_eval_monitors_manager.record(epoch_metrics)
+                train_eval_monitors_manager.print(epoch_metrics)
+                train_eval_monitors_manager.export()
 
-                acc = records[test_accuracy_monitor]
+                acc = records[test_eval_accuracy_monitor]
                 if acc > best_acc:
                     best_acc = acc
                     network.store(SAVE_DIR)
