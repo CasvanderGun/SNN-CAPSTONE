@@ -134,7 +134,7 @@ if __name__ == "__main__":
     all_test_train_loss_monitors.extend(test_train_loss_silent_monitors.values())
     all_test_train_loss_monitors.extend(test_train_loss_norm_monitors.values())
     all_test_train_loss_monitors.append(test_train_loss_time_monitor)
-    train_eval_monitors_manager = MonitorsManager(all_test_train_loss_monitors,
+    test_train_loss_monitors_manager = MonitorsManager(all_test_train_loss_monitors,
                                                   print_prefix="Test on train loss function| ")
     
 
@@ -143,6 +143,8 @@ if __name__ == "__main__":
     test_eval_loss_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "test_eval_loss_accuracy")
     test_eval_loss_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
     test_eval_loss_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_eval_loss_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("test_eval_loss_weight_norm_" + l.name))
+                          for l in network.layers if isinstance(l, LIFLayer)}
     test_eval_loss_time_monitor = TimeMonitor()
     all_test_eval_loss_monitors = [test_eval_loss_loss_monitor, test_eval_loss_accuracy_monitor]
     all_test_eval_loss_monitors.extend(test_eval_loss_spike_counts_monitors.values())
@@ -152,6 +154,7 @@ if __name__ == "__main__":
                                             print_prefix="Test on eval loss function | ")
 
     best_acc = 0.0
+
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
         train_train_loss_time_monitor.start()
@@ -171,16 +174,20 @@ if __name__ == "__main__":
             out_spikes, n_out_spikes = network.output_spike_trains
 
             # Predictions, loss and errors
-            pred = loss_fct.predict(out_spikes, n_out_spikes)
-            loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
+            train_loss_pred = loss_fct.predict(out_spikes, n_out_spikes)
+            train_loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
 
-            pred_cpu = pred.get()
-            loss_cpu = loss.get()
+            train_pred_cpu = train_loss_pred.get()
+            train_loss_cpu = train_loss.get()
+
+            
+
+
             n_out_spikes_cpu = n_out_spikes.get()
 
             # Update monitors
-            train_train_loss_monitor.add(loss_cpu)
-            train_train_loss_accuracy_monitor.add(pred_cpu, labels)
+            train_train_loss_monitor.add(train_loss_cpu)
+            train_train_loss_accuracy_monitor.add(train_pred_cpu, labels)
             train_train_loss_silent_label_monitor.add(n_out_spikes_cpu, labels)
 
             # Compute gradient
@@ -206,39 +213,70 @@ if __name__ == "__main__":
                 train_train_loss_monitors_manager.print(epoch_metrics)
                 train_train_loss_monitors_manager.export()
 
-            # Test evaluation
+            #  Evaluation
             if training_steps % TEST_PERIOD_STEP == 0:
-                test_eval_time_monitor.start()
+                test_eval_loss_time_monitor.start()
                 for batch_idx in range(N_TEST_BATCH):
                     spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
+                    
                     network.reset()
                     network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
+                    
                     out_spikes, n_out_spikes = network.output_spike_trains
 
-                    pred = loss_fct.predict(out_spikes, n_out_spikes)
-                    loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
+                    # EVALUATING ON TRAIN LOSS FUNCTION
 
-                    pred_cpu = pred.get()
-                    loss_cpu = loss.get()
-                    test_eval_loss_monitor.add(loss_cpu)
-                    test_eval_accuracy_monitor.add(pred_cpu, labels)
+                    test_train_loss_pred = loss_fct.predict(out_spikes, n_out_spikes)
+                    test_train_loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    for l, mon in test_eval_spike_counts_monitors.items():
+                    test_train_loss_pred_cpu = test_train_loss_pred.get()
+                    test_train_loss_cpu = test_train_loss.get()
+                    
+                    test_train_loss_loss_monitor.add(test_train_loss_cpu)
+                    test_train_loss_accuracy_monitor.add(test_train_loss_cpu, labels)
+
+                    for l, mon in test_train_loss_spike_counts_monitors.items():
                         mon.add(l.spike_trains[1])
 
-                    for l, mon in test_eval_silent_monitors.items():
+                    for l, mon in test_train_loss_silent_monitors.items():
                         mon.add(l.spike_trains[1])
 
-                for l, mon in test_eval_norm_monitors.items():
-                    mon.add(l.weights)
+                    for l, mon in test_train_loss_norm_monitors.items():
+                        mon.add(l.weights)
 
-                test_eval_learning_rate_monitor.add(optimizer.learning_rate)
+                    test_train_loss_learning_rate_monitor.add(optimizer.learning_rate)
 
-                records = train_eval_monitors_manager.record(epoch_metrics)
-                train_eval_monitors_manager.print(epoch_metrics)
-                train_eval_monitors_manager.export()
+                    # EVALUATING ON EVAL LOSS FUNCTION
 
-                acc = records[test_eval_accuracy_monitor]
+                    test_eval_loss_pred = eval_loss_fct.predict(out_spikes, n_out_spikes)
+                    test_eval_loss = eval_loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
+
+                    test_eval_loss_pred_cpu = test_eval_loss_pred.get()
+                    test_eval_loss_cpu = test_eval_loss.get()
+                    
+                    test_eval_loss_loss_monitor.add(test_eval_loss_cpu)
+                    test_eval_loss_accuracy_monitor.add(test_eval_loss_cpu, labels)
+
+                    for l, mon in test_eval_loss_spike_counts_monitors.items():
+                        mon.add(l.spike_trains[1])
+
+                    for l, mon in test_eval_loss_silent_monitors.items():
+                        mon.add(l.spike_trains[1])
+
+                    for l, mon in test_eval_loss_norm_monitors.items():
+                        mon.add(l.weights)
+
+
+                test_records = test_train_loss_monitors_manager.record(epoch_metrics)
+                test_train_loss_monitors_manager.print(epoch_metrics)
+                test_train_loss_monitors_manager.export()
+
+                records = test_eval_loss_monitors_manager.record(epoch_metrics)
+                train_train_loss_monitors_manager.print(epoch_metrics)
+                train_train_loss_monitors_manager.export()
+
+                acc = test_records[test_train_loss_accuracy_monitor]
+                
                 if acc > best_acc:
                     best_acc = acc
                     network.store(SAVE_DIR)
