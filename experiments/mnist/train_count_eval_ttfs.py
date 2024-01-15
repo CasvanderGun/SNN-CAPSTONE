@@ -105,6 +105,7 @@ if __name__ == "__main__":
 
     loss_fct = SpikeCountClassLoss(target_false=TARGET_FALSE, target_true=TARGET_TRUE)
     eval_loss_fct = TTFSSoftmaxCrossEntropy(tau=TAU_LOSS) ##NIEUW
+    
     optimizer = AdamOptimizer(learning_rate=LEARNING_RATE)
 
     # EVALUATING ON TRAINING DATA WITH TRAINING LOSS FUNCTION
@@ -233,7 +234,7 @@ if __name__ == "__main__":
                     test_train_loss_cpu = test_train_loss.get()
                     
                     test_train_loss_loss_monitor.add(test_train_loss_cpu)
-                    test_train_loss_accuracy_monitor.add(test_train_loss_cpu, labels)
+                    test_train_loss_accuracy_monitor.add(test_train_loss_pred_cpu, labels)
 
                     for l, mon in test_train_loss_spike_counts_monitors.items():
                         mon.add(l.spike_trains[1])
@@ -255,7 +256,7 @@ if __name__ == "__main__":
                     test_eval_loss_cpu = test_eval_loss.get()
                     
                     test_eval_loss_loss_monitor.add(test_eval_loss_cpu)
-                    test_eval_loss_accuracy_monitor.add(test_eval_loss_cpu, labels)
+                    test_eval_loss_accuracy_monitor.add(test_eval_loss_pred_cpu, labels)
 
                     for l, mon in test_eval_loss_spike_counts_monitors.items():
                         mon.add(l.spike_trains[1])
