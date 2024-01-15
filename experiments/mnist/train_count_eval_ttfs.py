@@ -254,7 +254,8 @@ if __name__ == "__main__":
 
                     test_eval_loss_pred_cpu = test_eval_loss_pred.get()
                     
-                    print(test_eval_loss_pred_cpu.shape)
+                    print(test_eval_loss_pred.shape)
+                    print(test_eval_loss_pred)
 
                     test_eval_loss_cpu = test_eval_loss.get()
                     
