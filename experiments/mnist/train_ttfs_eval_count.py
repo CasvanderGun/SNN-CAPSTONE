@@ -253,10 +253,6 @@ if __name__ == "__main__":
                     test_eval_loss = eval_loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
 
                     test_eval_loss_pred_cpu = test_eval_loss_pred.get()
-                    
-                    print(test_eval_loss_pred.shape)
-                    print(test_eval_loss_pred)
-
                     test_eval_loss_cpu = test_eval_loss.get()
                     
                     test_eval_loss_loss_monitor.add(test_eval_loss_cpu)
