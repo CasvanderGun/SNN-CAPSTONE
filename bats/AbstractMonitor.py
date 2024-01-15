@@ -39,7 +39,12 @@ class AbstractMonitor(ABC):
         np.savez(self._export_path, epochs=self._epochs, values=self._values)
 
         plt.plot(self._epochs, self._values)
+        str_path = str(self._export_path)
+        last_loc = str_path.rfind('/')
+        title = str_path[last_loc + 1:]
+        plt.title(title)
         plt.xlabel("Epoch")
         plt.ylabel(self._name)
         plt.savefig(self._export_path.with_suffix('.png'))
         plt.close()
+
