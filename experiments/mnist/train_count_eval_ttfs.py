@@ -273,8 +273,8 @@ if __name__ == "__main__":
                 test_train_loss_monitors_manager.export()
 
                 records = test_eval_loss_monitors_manager.record(epoch_metrics)
-                train_train_loss_monitors_manager.print(epoch_metrics)
-                train_train_loss_monitors_manager.export()
+                test_eval_loss_monitors_manager.print(epoch_metrics)
+                test_eval_loss_monitors_manager.export()
 
                 acc = test_records[test_train_loss_accuracy_monitor]
                 
