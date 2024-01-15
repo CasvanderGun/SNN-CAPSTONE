@@ -121,7 +121,8 @@ if __name__ == "__main__":
     test_learning_rate_monitor = ValueMonitor(name="Learning rate", decimal=5)
     # Only monitor LIF layers
     test_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_silent_monitors = {l: SilentNeuronsMonitor(l.name, export_path=EXPORT_DIR / ("silent_neurons_" + l.name))
+                          for l in network.layers if isinstance(l, LIFLayer)}
     test_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
                           for l in network.layers if isinstance(l, LIFLayer)}
     test_time_monitor = TimeMonitor()
