@@ -16,7 +16,7 @@ class SilentNeuronsMonitor(AbstractMonitor):
         self._total_counts += np.sum(n_spikes, axis=0)
 
     def record(self, epoch) -> float:
-        silent_ratio = np.mean(self._total_counts == 0) * 100
+        silent_ratio = np.mean(self._total_counts.get() == 0) * 100
         super()._record(epoch, silent_ratio)
         self._total_counts = None
         return silent_ratio
