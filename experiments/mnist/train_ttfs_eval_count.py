@@ -143,7 +143,8 @@ if __name__ == "__main__":
     test_eval_loss_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "test_eval_loss_loss") 
     test_eval_loss_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "test_eval_loss_accuracy")
     test_eval_loss_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_eval_loss_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_eval_loss_silent_monitors = {l: SilentNeuronsMonitor(l.name, export_path=EXPORT_DIR / ("silent_neurons_" + l.name))
+                          for l in network.layers if isinstance(l, LIFLayer)}
     test_eval_loss_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("test_eval_loss_weight_norm_" + l.name))
                           for l in network.layers if isinstance(l, LIFLayer)}
     test_eval_loss_time_monitor = TimeMonitor()
