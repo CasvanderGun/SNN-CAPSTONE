@@ -55,8 +55,8 @@ TARGET_TRUE = 15
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/best_model")
+EXPORT_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_weighedMSE/output_metrics")
+SAVE_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_weighedMSE/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
