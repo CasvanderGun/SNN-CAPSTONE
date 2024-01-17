@@ -154,7 +154,7 @@ if __name__ == "__main__":
             optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
 
         for batch_idx in range(N_TRAIN_BATCH):
-            # Test evaluation
+            # Test evaluation with initial no training accuracy
             if training_steps % TEST_PERIOD_STEP == 0:
                 if training_steps == 0:
                     epoch_metrics = 0.0
