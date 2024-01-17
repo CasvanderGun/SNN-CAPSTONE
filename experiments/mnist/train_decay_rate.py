@@ -14,7 +14,7 @@ from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
-def train_decay_rate(export_path, decay_rate):
+def train_decay_rate(epochs, decay_rate, export_path):
     # Dataset
     DATASET_PATH = Path("../../datasets/mnist.npz")
 
@@ -36,7 +36,7 @@ def train_decay_rate(export_path, decay_rate):
     SPIKE_BUFFER_SIZE_OUTPUT = 30
 
     # Training parameters
-    N_TRAINING_EPOCHS = 50
+    N_TRAINING_EPOCHS = epochs
     N_TRAIN_SAMPLES = 60000
     N_TEST_SAMPLES = 10000
     TRAIN_BATCH_SIZE = 50
