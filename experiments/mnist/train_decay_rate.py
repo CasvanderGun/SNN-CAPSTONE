@@ -14,12 +14,12 @@ from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
-def train_decay_rate(epochs, decay_rate, export_path):
+def train_decay_rate(epochs, decay_rate, simulation_time, export_path):
     # Dataset
     DATASET_PATH = Path("../../datasets/mnist.npz")
 
     N_INPUTS = 28 * 28
-    SIMULATION_TIME = 0.2
+    SIMULATION_TIME = simulation_time
 
     # Hidden layer
     N_NEURONS_1 = 800
