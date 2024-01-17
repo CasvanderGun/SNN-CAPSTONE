@@ -1,13 +1,10 @@
 import matplotlib.pyplot as plt 
 import numpy as np
 
-# file_path = "/Users/hanna/Downloads/SNN-CAPSTONE-1/results/own_loss/output_metrics/"
-# data = np.load(file_path)
-
 import os
 
 # Specify the path to the directory
-directory_path = '/Users/hanna/Downloads/SNN-CAPSTONE-1/results/own_loss/output_metrics (50 epoch)/'
+directory_path = r'\Users\hanna\Downloads\SNN-CAPSTONE-1\results\own_loss\output_metrics_50-epoch'
 
 def loading_files(dic_path):
     """ Loading .npz files from directory and storing as useable data"""
@@ -39,7 +36,7 @@ ax1.set_ylabel("accuracy (%)")
 ax1.set_title("Accuracy")
 ax1.legend()
 
-# plot the accuries together
+# plot the loss together
 ax2.plot(data[2]["epochs"], data[2]["values"], color='r', label="test")
 ax2.plot(data[3]["epochs"], data[3]["values"], color='b', label="train")
 ax2.set_xlabel('Epochs')
@@ -47,7 +44,7 @@ ax2.set_ylabel("loss")
 ax2.set_title("Loss")
 ax2.legend()
 
-# plot the accuries together
+# plot the weight norm together
 ax3.plot(data[4]["epochs"], data[4]["values"], color='r', label="Hidden layer")
 ax3.plot(data[5]["epochs"], data[5]["values"], color='b', label="Output layer")
 ax3.set_xlabel('Epochs')
@@ -55,6 +52,6 @@ ax3.set_ylabel("weight norm")
 ax3.set_title("Weight norm")
 ax3.legend()
 
-# Show the plot or save it to a file
+# Show the plot
 plt.show()
 
