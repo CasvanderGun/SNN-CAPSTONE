@@ -34,7 +34,7 @@ DELTA_THRESHOLD_OUTPUT = 1 * THRESHOLD_HAT_OUTPUT
 SPIKE_BUFFER_SIZE_OUTPUT = 30
 
 # Training parameters
-N_TRAINING_EPOCHS = 5
+N_TRAINING_EPOCHS = 30
 N_TRAIN_SAMPLES = 60000
 N_TEST_SAMPLES = 10000
 TRAIN_BATCH_SIZE = 50
@@ -154,52 +154,10 @@ if __name__ == "__main__":
             optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
 
         for batch_idx in range(N_TRAIN_BATCH):
-            # Get next batch
-            spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
-
-            # Inference
-            network.reset()
-            network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
-            out_spikes, n_out_spikes = network.output_spike_trains
-
-            # Predictions, loss and errors
-            pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
-            loss_count, errors_count = loss_fct_count.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
-
-            pred_count_cpu = pred_count.get()
-            loss_count_cpu = loss_count.get()
-            n_out_spikes_cpu = n_out_spikes.get()
-
-            # Update monitors
-            train_loss_monitor.add(loss_count_cpu)
-            train_accuracy_monitor.add(pred_count_cpu, labels)
-            train_silent_label_monitor.add(n_out_spikes_cpu, labels)
-
-            # Compute gradient
-            gradient = network.backward(errors_count)
-            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g in gradient]
-            del gradient
-
-            # Apply step
-            deltas = optimizer.step(avg_gradient)
-            del avg_gradient
-
-            network.apply_deltas(deltas)
-            del deltas
-
-            training_steps += 1
-            epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
-
-            # Training metrics
-            if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
-                # Compute metrics
-
-                train_monitors_manager.record(epoch_metrics)
-                train_monitors_manager.print(epoch_metrics)
-                train_monitors_manager.export()
-
             # Test evaluation
             if training_steps % TEST_PERIOD_STEP == 0:
+                if training_steps == 0:
+                    epoch_metrics = 0.0
                 test_time_monitor.start()
                 for batch_idx in range(N_TEST_BATCH):
                     spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
@@ -244,3 +202,47 @@ if __name__ == "__main__":
                     best_acc = acc
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+            
+            # Get next batch
+            spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
+
+            # Inference
+            network.reset()
+            network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
+            out_spikes, n_out_spikes = network.output_spike_trains
+
+            # Predictions, loss and errors
+            pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
+            loss_count, errors_count = loss_fct_count.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
+
+            pred_count_cpu = pred_count.get()
+            loss_count_cpu = loss_count.get()
+            n_out_spikes_cpu = n_out_spikes.get()
+
+            # Update monitors
+            train_loss_monitor.add(loss_count_cpu)
+            train_accuracy_monitor.add(pred_count_cpu, labels)
+            train_silent_label_monitor.add(n_out_spikes_cpu, labels)
+
+            # Compute gradient
+            gradient = network.backward(errors_count)
+            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g in gradient]
+            del gradient
+
+            # Apply step
+            deltas = optimizer.step(avg_gradient)
+            del avg_gradient
+
+            network.apply_deltas(deltas)
+            del deltas
+
+            training_steps += 1
+            epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
+
+            # Training metrics
+            if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
+                # Compute metrics
+
+                train_monitors_manager.record(epoch_metrics)
+                train_monitors_manager.print(epoch_metrics)
+                train_monitors_manager.export()
