@@ -48,16 +48,16 @@ TEST_PERIOD = 1.0  # Evaluate on test batch every TEST_PERIOD epochs
 TEST_PERIOD_STEP = int(N_TRAIN_SAMPLES * TEST_PERIOD / TRAIN_BATCH_SIZE)
 LEARNING_RATE = 0.003
 LR_DECAY_EPOCH = 10  # Perform decay very n epochs
-LR_DECAY_FACTOR = 1.0
-MIN_LEARNING_RATE = 0
+LR_DECAY_FACTOR = 0.5
+MIN_LEARNING_RATE = 0.0001
 TARGET_FALSE = 3
 TARGET_TRUE = 15
 DECAY_RATE = 1
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/best_model")
+EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_weighed_MSE_lr/output_metrics")
+SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_weighed_MSE_lr/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
