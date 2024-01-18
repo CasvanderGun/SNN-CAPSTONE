@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
-from experiments.mnist.train_decay_rate import train_decay_rate
+from experiments.mnist.Own_loss.train_decay_rate import train_decay_rate
 
 epochs = 20
 simulation_time = 0.2
