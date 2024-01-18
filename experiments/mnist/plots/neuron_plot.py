@@ -12,7 +12,7 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         data_to_plot = np.array([avg_spike_counts[digit] for digit in sorted(avg_spike_counts.keys())])
         plt.figure(figsize=(8, 8))
         custom_map = LinearSegmentedColormap.from_list('custom', ['white', 'lavender', 'yellow', 'red', 'black'])
-        plt.imshow(data_to_plot, cmap=custom_map, interpolation='nearest', origin='lower', aspect=10, vmin=0, vmax=vmax)
+        plt.imshow(data_to_plot, cmap=custom_map, interpolation='nearest', origin='lower', aspect=amount_of_neurons_shown/10, vmin=0, vmax=vmax)
         plt.xlim(0,amount_of_neurons_shown)
         plt.colorbar()
         plt.xlabel('Hiddden Neuron Index')
