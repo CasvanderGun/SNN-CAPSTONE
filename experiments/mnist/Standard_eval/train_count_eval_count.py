@@ -1,6 +1,7 @@
 from pathlib import Path
 import cupy as cp
 import numpy as np
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
 
 import sys
 
@@ -130,95 +131,113 @@ if __name__ == "__main__":
     test_monitors_manager = MonitorsManager(all_test_monitors,
                                             print_prefix="Test | ")
 
+    # Initialize a dictionary to hold spike count data
+    spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
+
+
     best_acc = 0.0
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
-        train_time_monitor.start()
-        dataset.shuffle()
+      train_time_monitor.start()
+      dataset.shuffle()
 
-        # Learning rate decay
-        if epoch > 0 and epoch % LR_DECAY_EPOCH == 0:
-            optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
+      # Learning rate decay
+      if epoch > 0 and epoch % LR_DECAY_EPOCH == 0:
+          optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
 
-        for batch_idx in range(N_TRAIN_BATCH):
-            # Get next batch
-            spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
+      for batch_idx in range(N_TRAIN_BATCH):
+          # Get next batch
+          spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
 
-            # Inference
-            network.reset()
-            network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
-            out_spikes, n_out_spikes = network.output_spike_trains
+          # Inference
+          network.reset()
+          network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
+          out_spikes, n_out_spikes = network.output_spike_trains
 
-            # Predictions, loss and errors
-            pred = loss_fct.predict(out_spikes, n_out_spikes)
-            loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
+          # Get the spike count from the hidden layer
+          hidden_layer_spike_count = hidden_layer.spike_trains[1].get()
 
-            pred_cpu = pred.get()
-            loss_cpu = loss.get()
-            n_out_spikes_cpu = n_out_spikes.get()
+          # Store the spike count data
+          for i, label in enumerate(labels):
+              spike_counts[label].append(hidden_layer_spike_count[i])
 
-            # Update monitors
-            train_loss_monitor.add(loss_cpu)
-            train_accuracy_monitor.add(pred_cpu, labels)
-            train_silent_label_monitor.add(n_out_spikes_cpu, labels)
+          # Predictions, loss and errors
+          pred = loss_fct.predict(out_spikes, n_out_spikes)
+          loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
 
-            # Compute gradient
-            gradient = network.backward(errors)
-            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g, layer in zip(gradient, network.layers)]
-            del gradient
+          pred_cpu = pred.get()
+          loss_cpu = loss.get()
+          n_out_spikes_cpu = n_out_spikes.get()
 
-            # Apply step
-            deltas = optimizer.step(avg_gradient)
-            del avg_gradient
+          # Update monitors
+          train_loss_monitor.add(loss_cpu)
+          train_accuracy_monitor.add(pred_cpu, labels)
+          train_silent_label_monitor.add(n_out_spikes_cpu, labels)
 
-            network.apply_deltas(deltas)
-            del deltas
+          # Compute gradient
+          gradient = network.backward(errors)
+          avg_gradient = [None if g is None else cp.mean(g, axis=0) for g, layer in zip(gradient, network.layers)]
+          del gradient
 
-            training_steps += 1
-            epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
+          # Apply step
+          deltas = optimizer.step(avg_gradient)
+          del avg_gradient
 
-            # Training metrics
-            if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
-                # Compute metrics
+          network.apply_deltas(deltas)
+          del deltas
 
-                train_monitors_manager.record(epoch_metrics)
-                train_monitors_manager.print(epoch_metrics)
-                train_monitors_manager.export()
+          training_steps += 1
+          epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
 
-            # Test evaluation
-            if training_steps % TEST_PERIOD_STEP == 0:
-                test_time_monitor.start()
-                for batch_idx in range(N_TEST_BATCH):
-                    spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
-                    network.reset()
-                    network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
-                    out_spikes, n_out_spikes = network.output_spike_trains
+          # Training metrics
+          if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
+              # Compute metrics
 
-                    pred = loss_fct.predict(out_spikes, n_out_spikes)
-                    loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
+              train_monitors_manager.record(epoch_metrics)
+              train_monitors_manager.print(epoch_metrics)
+              train_monitors_manager.export()
 
-                    pred_cpu = pred.get()
-                    loss_cpu = loss.get()
-                    test_loss_monitor.add(loss_cpu)
-                    test_accuracy_monitor.add(pred_cpu, labels)
+          # Test evaluation
+          if training_steps % TEST_PERIOD_STEP == 0:
+              test_time_monitor.start()
+              for batch_idx in range(N_TEST_BATCH):
+                  spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
+                  network.reset()
+                  network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
+                  out_spikes, n_out_spikes = network.output_spike_trains
 
-                    for l, mon in test_spike_counts_monitors.items():
-                        mon.add(l.spike_trains[1])
+                  pred = loss_fct.predict(out_spikes, n_out_spikes)
+                  loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    for l, mon in test_silent_monitors.items():
-                        mon.add(l.spike_trains[1])
+                  pred_cpu = pred.get()
+                  loss_cpu = loss.get()
+                  test_loss_monitor.add(loss_cpu)
+                  test_accuracy_monitor.add(pred_cpu, labels)
 
-                for l, mon in test_norm_monitors.items():
-                    mon.add(l.weights)
+                  for l, mon in test_spike_counts_monitors.items():
+                      mon.add(l.spike_trains[1])
 
-                test_learning_rate_monitor.add(optimizer.learning_rate)
+                  for l, mon in test_silent_monitors.items():
+                      mon.add(l.spike_trains[1])
 
-                records = test_monitors_manager.record(epoch_metrics)
-                test_monitors_manager.print(epoch_metrics)
-                test_monitors_manager.export()
+              for l, mon in test_norm_monitors.items():
+                  mon.add(l.weights)
 
-                acc = records[test_accuracy_monitor]
-                if acc > best_acc:
-                    best_acc = acc
-                    network.store(SAVE_DIR)
-                    print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+              test_learning_rate_monitor.add(optimizer.learning_rate)
+
+              records = test_monitors_manager.record(epoch_metrics)
+              test_monitors_manager.print(epoch_metrics)
+              test_monitors_manager.export()
+
+              acc = records[test_accuracy_monitor]
+              if acc > best_acc:
+                  best_acc = acc
+                  network.store(SAVE_DIR)
+                  print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+      
+      # Calculate average spike counts
+      avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+      
+      # Create a figure to visualize network activity and sparsity
+      create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_Count_Epoch{epoch + 1}')
+      create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_Count_Epoch{epoch + 1}')
