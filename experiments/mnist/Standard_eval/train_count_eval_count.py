@@ -1,7 +1,7 @@
 from pathlib import Path
 import cupy as cp
 import numpy as np
-from neuron_plot import create_spike_count_map
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
 
 import sys
 
