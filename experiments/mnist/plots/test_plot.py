@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt 
 import numpy as np
-
+import seaborn as sns
+import pandas as pd
 import os
 
 # Specify the path to the directory
@@ -26,32 +27,51 @@ def loading_files(dic_path):
 
 data = loading_files(directory_path)
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5), gridspec_kw={'width_ratios': [1, 1, 1]})
+# Find the common set of epochs between test and training data
+common_epochs = set(data[0]['epochs']).intersection(set(data[1]['epochs']))
 
-# plot the accuries together
-ax1.plot(data[0]["epochs"], data[0]["values"], color='r', label="test")
-ax1.plot(data[1]["epochs"], data[1]["values"], color='b', label="train")
-ax1.set_xlabel('Epochs')
-ax1.set_ylabel("accuracy (%)")
-ax1.set_title("Accuracy")
-ax1.legend()
+# Create dataframes for accuracy, loss, and weight norm
+accuracy_df = pd.DataFrame({
+    'Epochs': list(common_epochs),
+    'Test Accuracy': [data[0]['values'][data[0]['epochs'].tolist().index(epoch)] for epoch in common_epochs],
+    'Train Accuracy': [data[1]['values'][data[1]['epochs'].tolist().index(epoch)] for epoch in common_epochs]
+})
 
-# plot the loss together
-ax2.plot(data[2]["epochs"], data[2]["values"], color='r', label="test")
-ax2.plot(data[3]["epochs"], data[3]["values"], color='b', label="train")
-ax2.set_xlabel('Epochs')
-ax2.set_ylabel("loss")
-ax2.set_title("Loss")
-ax2.legend()
+loss_df = pd.DataFrame({
+    'Epochs': list(common_epochs),
+    'Test Loss': [data[2]['values'][data[2]['epochs'].tolist().index(epoch)] for epoch in common_epochs],
+    'Train Loss': [data[3]['values'][data[3]['epochs'].tolist().index(epoch)] for epoch in common_epochs]
+})
 
-# plot the weight norm together
-ax3.plot(data[4]["epochs"], data[4]["values"], color='r', label="Hidden layer")
-ax3.plot(data[5]["epochs"], data[5]["values"], color='b', label="Output layer")
-ax3.set_xlabel('Epochs')
-ax3.set_ylabel("weight norm")
-ax3.set_title("Weight norm")
-ax3.legend()
+weight_norm_df = pd.DataFrame({
+    'Epochs': list(common_epochs),
+    'Hidden Layer Weight Norm': [data[4]['values'][data[4]['epochs'].tolist().index(epoch)] for epoch in common_epochs],
+    'Output Layer Weight Norm': [data[5]['values'][data[5]['epochs'].tolist().index(epoch)] for epoch in common_epochs]
+})
 
-# Show the plot
+# Set up Seaborn style
+sns.set(style='whitegrid')
+
+# Create a figure with subplots
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+# Plot Accuracy
+sns.lineplot(x='Epochs', y='Test Accuracy', data=accuracy_df, color='r', label='Test Accuracy', ax=axes[0])
+sns.lineplot(x='Epochs', y='Train Accuracy', data=accuracy_df, color='b', label='Train Accuracy', ax=axes[0])
+axes[0].set_title('Accuracy')
+axes[0].set_ylabel('accuracy (%)')
+
+# Plot Loss
+sns.lineplot(x='Epochs', y='Test Loss', data=loss_df, color='r', label='Test Loss', ax=axes[1])
+sns.lineplot(x='Epochs', y='Train Loss', data=loss_df, color='b', label='Train Loss', ax=axes[1])
+axes[1].set_title('Loss')
+axes[1].set_ylabel('loss')
+
+# Plot Weight Norm
+sns.lineplot(x='Epochs', y='Hidden Layer Weight Norm', data=weight_norm_df, color='r', label='Hidden Layer', ax=axes[2])
+sns.lineplot(x='Epochs', y='Output Layer Weight Norm', data=weight_norm_df, color='b', label='Output Layer', ax=axes[2])
+axes[2].set_title('Weight Norm')
+axes[2].set_ylabel('weight norm')
+
 plt.show()
 
