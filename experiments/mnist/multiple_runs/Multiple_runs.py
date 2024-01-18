@@ -1,6 +1,6 @@
 import sys
 
-sys.path.insert(0, "../../")  # Add repository root to python path
+sys.path.insert(0, "../../../")  # Add repository root to python path
 
 from experiments.mnist.multiple_runs.train_count_eval_ttfs_func import train_count_eval_ttfs_func
 

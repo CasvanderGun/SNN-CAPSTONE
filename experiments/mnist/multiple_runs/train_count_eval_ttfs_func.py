@@ -4,7 +4,7 @@ import numpy as np
 
 import sys
 
-sys.path.insert(0, "../../")  # Add repository root to python path
+sys.path.insert(0, "../../../")  # Add repository root to python path
 
 from Dataset import Dataset
 from bats.Monitors import *
