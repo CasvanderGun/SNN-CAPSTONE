@@ -1,0 +1,59 @@
+Run 1
+Decay rate 3
+
+Numpy seed: 1855143858, Cupy seed: 1073017280
+Loading datasets...
+Creating network...
+Training...
+Train | Epoch 0.1 | Loss: 82.79, Accuracy (%): 45.55, Silent labels (%): 20.7, Time (s): 16.0
+Train | Epoch 0.2 | Loss: 48.44, Accuracy (%): 74.77, Silent labels (%): 8.35, Time (s): 33.44
+Train | Epoch 0.3 | Loss: 32.99, Accuracy (%): 85.03, Silent labels (%): 0.08, Time (s): 51.27
+Train | Epoch 0.4 | Loss: 27.43, Accuracy (%): 89.52, Silent labels (%): 0.03, Time (s): 69.41
+Train | Epoch 0.5 | Loss: 25.04, Accuracy (%): 90.03, Silent labels (%): 0.03, Time (s): 87.67
+Train | Epoch 0.6 | Loss: 22.79, Accuracy (%): 90.65, Silent labels (%): 0.02, Time (s): 105.85
+Train | Epoch 0.7 | Loss: 21.66, Accuracy (%): 91.47, Silent labels (%): 0.0, Time (s): 124.09
+Train | Epoch 0.8 | Loss: 19.49, Accuracy (%): 92.48, Silent labels (%): 0.02, Time (s): 142.39
+Train | Epoch 0.9 | Loss: 18.84, Accuracy (%): 92.83, Silent labels (%): 0.0, Time (s): 160.61
+Train | Epoch 1.0 | Loss: 18.45, Accuracy (%): 92.85, Silent labels (%): 0.02, Time (s): 178.91
+Test | Epoch 1.0 | Loss: 17.15, Accuracy (%): 93.61, Learning rate: 0.003, Hidden layer 1 spike counts: 1265.42, Output layer spike counts: 76.65, Hidden layer 1 silents (%): 0.12, Output layer silents (%): 0.0, Hidden layer 1 weights norm: 462.07, Output layer weights norm: 54.65, Time (s): 2.42
+Best accuracy: 93.61%, Networks save to: /content/SNN-CAPSTONE/results/train_decay_rate/Simulation time 1/decay_rate_3/best_model
+Train | Epoch 1.1 | Loss: 16.98, Accuracy (%): 93.83, Silent labels (%): 0.0, Time (s): 17.7
+Train | Epoch 1.2 | Loss: 16.51, Accuracy (%): 93.83, Silent labels (%): 0.02, Time (s): 36.0
+Train | Epoch 1.3 | Loss: 15.79, Accuracy (%): 94.57, Silent labels (%): 0.02, Time (s): 54.4
+Train | Epoch 1.4 | Loss: 15.49, Accuracy (%): 94.32, Silent labels (%): 0.0, Time (s): 72.66
+Train | Epoch 1.5 | Loss: 14.92, Accuracy (%): 94.33, Silent labels (%): 0.0, Time (s): 90.85
+Train | Epoch 1.6 | Loss: 14.9, Accuracy (%): 94.25, Silent labels (%): 0.02, Time (s): 109.02
+Train | Epoch 1.7 | Loss: 14.65, Accuracy (%): 94.58, Silent labels (%): 0.0, Time (s): 127.22
+Train | Epoch 1.8 | Loss: 14.45, Accuracy (%): 94.65, Silent labels (%): 0.0, Time (s): 145.37
+Train | Epoch 1.9 | Loss: 13.78, Accuracy (%): 94.87, Silent labels (%): 0.0, Time (s): 163.62
+Train | Epoch 2.0 | Loss: 13.96, Accuracy (%): 94.55, Silent labels (%): 0.0, Time (s): 181.83
+Test | Epoch 2.0 | Loss: 13.29, Accuracy (%): 95.2, Learning rate: 0.003, Hidden layer 1 spike counts: 1295.81, Output layer spike counts: 76.34, Hidden layer 1 silents (%): 0.0, Output layer silents (%): 0.0, Hidden layer 1 weights norm: 466.03, Output layer weights norm: 57.18, Time (s): 2.41
+Best accuracy: 95.2%, Networks save to: /content/SNN-CAPSTONE/results/train_decay_rate/Simulation time 1/decay_rate_3/best_model
+Train | Epoch 2.1 | Loss: 13.18, Accuracy (%): 95.5, Silent labels (%): 0.0, Time (s): 17.87
+Train | Epoch 2.2 | Loss: 13.09, Accuracy (%): 95.17, Silent labels (%): 0.03, Time (s): 36.55
+Train | Epoch 2.3 | Loss: 13.14, Accuracy (%): 94.83, Silent labels (%): 0.0, Time (s): 55.47
+Train | Epoch 2.4 | Loss: 12.64, Accuracy (%): 95.3, Silent labels (%): 0.0, Time (s): 74.42
+Train | Epoch 2.5 | Loss: 12.35, Accuracy (%): 95.85, Silent labels (%): 0.0, Time (s): 93.53
+Train | Epoch 2.6 | Loss: 12.23, Accuracy (%): 95.53, Silent labels (%): 0.03, Time (s): 112.77
+Train | Epoch 2.7 | Loss: 12.08, Accuracy (%): 95.67, Silent labels (%): 0.02, Time (s): 132.18
+Train | Epoch 2.8 | Loss: 11.94, Accuracy (%): 95.83, Silent labels (%): 0.0, Time (s): 151.74
+Train | Epoch 2.9 | Loss: 11.59, Accuracy (%): 95.78, Silent labels (%): 0.0, Time (s): 171.18
+Train | Epoch 3.0 | Loss: 11.97, Accuracy (%): 95.58, Silent labels (%): 0.0, Time (s): 190.64
+Test | Epoch 3.0 | Loss: 11.52, Accuracy (%): 95.84, Learning rate: 0.003, Hidden layer 1 spike counts: 1367.73, Output layer spike counts: 77.92, Hidden layer 1 silents (%): 0.12, Output layer silents (%): 0.0, Hidden layer 1 weights norm: 469.7, Output layer weights norm: 59.46, Time (s): 2.47
+Best accuracy: 95.84%, Networks save to: /content/SNN-CAPSTONE/results/train_decay_rate/Simulation time 1/decay_rate_3/best_model
+Train | Epoch 3.1 | Loss: 11.17, Accuracy (%): 96.23, Silent labels (%): 0.0, Time (s): 18.84
+Train | Epoch 3.2 | Loss: 11.34, Accuracy (%): 96.07, Silent labels (%): 0.03, Time (s): 38.29
+Train | Epoch 3.3 | Loss: 11.62, Accuracy (%): 95.72, Silent labels (%): 0.0, Time (s): 57.8
+Train | Epoch 3.4 | Loss: 11.01, Accuracy (%): 96.35, Silent labels (%): 0.0, Time (s): 77.09
+Train | Epoch 3.5 | Loss: 11.04, Accuracy (%): 96.1, Silent labels (%): 0.0, Time (s): 96.45
+Train | Epoch 3.6 | Loss: 10.8, Accuracy (%): 96.07, Silent labels (%): 0.0, Time (s): 115.63
+Train | Epoch 3.7 | Loss: 10.82, Accuracy (%): 96.38, Silent labels (%): 0.0, Time (s): 134.76
+Train | Epoch 3.8 | Loss: 10.5, Accuracy (%): 96.47, Silent labels (%): 0.0, Time (s): 154.06
+Train | Epoch 3.9 | Loss: 10.6, Accuracy (%): 96.28, Silent labels (%): 0.02, Time (s): 173.41
+Train | Epoch 4.0 | Loss: 10.43, Accuracy (%): 96.52, Silent labels (%): 0.0, Time (s): 192.81
+Test | Epoch 4.0 | Loss: 10.49, Accuracy (%): 96.39, Learning rate: 0.003, Hidden layer 1 spike counts: 1365.0, Output layer spike counts: 77.24, Hidden layer 1 silents (%): 0.12, Output layer silents (%): 0.0, Hidden layer 1 weights norm: 472.99, Output layer weights norm: 61.49, Time (s): 2.47
+Best accuracy: 96.39%, Networks save to: /content/SNN-CAPSTONE/results/train_decay_rate/Simulation time 1/decay_rate_3/best_model
+Traceback (most recent call last):
+....
+
+KeyboardInterrupt
