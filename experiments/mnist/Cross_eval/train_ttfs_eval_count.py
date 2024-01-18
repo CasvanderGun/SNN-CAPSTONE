@@ -4,9 +4,9 @@ import numpy as np
 
 import sys
 
-sys.path.insert(0, "../../")  # Add repository root to python path
+sys.path.insert(0, "../../../")  # Add repository root to python path
 
-from Dataset import Dataset
+from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
 from bats.Losses import *
@@ -14,7 +14,7 @@ from bats.Network import Network
 from bats.Optimizers import *
 
 # Dataset
-DATASET_PATH = Path("../../datasets/mnist.npz")
+DATASET_PATH = Path("../../../datasets/mnist.npz")
 
 N_INPUTS = 28 * 28
 SIMULATION_TIME = 1.0
