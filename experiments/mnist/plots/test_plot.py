@@ -73,3 +73,5 @@ sns.lineplot(x='Epochs', y='Output Layer Weight Norm', data=weight_norm_df, colo
 axes[2].set_title('Weight Norm')
 axes[2].set_ylabel('weight norm')
 
+plt.show()
+
