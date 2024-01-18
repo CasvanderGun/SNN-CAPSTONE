@@ -1,6 +1,7 @@
 from pathlib import Path
 import cupy as cp
 import numpy as np
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
 
 import sys
 
@@ -17,21 +18,21 @@ from bats.Optimizers import *
 DATASET_PATH = Path("../../datasets/mnist.npz")
 
 N_INPUTS = 28 * 28
-SIMULATION_TIME = 1.0
+SIMULATION_TIME = 0.2
 
 # Hidden layer
 N_NEURONS_1 = 800
 TAU_S_1 = 0.130
-THRESHOLD_HAT_1 = 0.7
+THRESHOLD_HAT_1 = 0.2
 DELTA_THRESHOLD_1 = 1 * THRESHOLD_HAT_1
-SPIKE_BUFFER_SIZE_1 = 1
+SPIKE_BUFFER_SIZE_1 = 30
 
 # Output_layer
 N_OUTPUTS = 10
 TAU_S_OUTPUT = 0.130
-THRESHOLD_HAT_OUTPUT = 2.0
+THRESHOLD_HAT_OUTPUT = 1.3
 DELTA_THRESHOLD_OUTPUT = 1 * THRESHOLD_HAT_OUTPUT
-SPIKE_BUFFER_SIZE_OUTPUT = 1
+SPIKE_BUFFER_SIZE_OUTPUT = 30
 
 # Training parameters
 N_TRAINING_EPOCHS = 30
@@ -45,24 +46,21 @@ TRAIN_PRINT_PERIOD = 0.1
 TRAIN_PRINT_PERIOD_STEP = int(N_TRAIN_SAMPLES * TRAIN_PRINT_PERIOD / TRAIN_BATCH_SIZE)
 TEST_PERIOD = 1.0  # Evaluate on test batch every TEST_PERIOD epochs
 TEST_PERIOD_STEP = int(N_TRAIN_SAMPLES * TEST_PERIOD / TRAIN_BATCH_SIZE)
-LEARNING_RATE = 0.002
+LEARNING_RATE = 0.003
 LR_DECAY_EPOCH = 10  # Perform decay very n epochs
 LR_DECAY_FACTOR = 1.0
 MIN_LEARNING_RATE = 0
-TAU_LOSS = 0.005
+TARGET_FALSE = 3
+TARGET_TRUE = 15
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs/best_model")
+EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_count/output_metrics")
+SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_count/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
-    return cp.random.uniform(0.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
-
-
-def weight_initializer_out(n_post: int, n_pre: int) -> cp.ndarray:
-    return cp.random.uniform(0.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
+    return cp.random.uniform(-1.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
 
 
 if __name__ == "__main__":
@@ -96,17 +94,17 @@ if __name__ == "__main__":
     output_layer = LIFLayer(previous_layer=hidden_layer, n_neurons=N_OUTPUTS, tau_s=TAU_S_OUTPUT,
                             theta=THRESHOLD_HAT_OUTPUT,
                             delta_theta=DELTA_THRESHOLD_OUTPUT,
-                            weight_initializer=weight_initializer_out,
+                            weight_initializer=weight_initializer,
                             max_n_spike=SPIKE_BUFFER_SIZE_OUTPUT,
                             name="Output layer")
     network.add_layer(output_layer)
 
-    loss_fct = TTFSSoftmaxCrossEntropy(tau=TAU_LOSS)
+    loss_fct = SpikeCountClassLoss(target_false=TARGET_FALSE, target_true=TARGET_TRUE)
     optimizer = AdamOptimizer(learning_rate=LEARNING_RATE)
 
     # Metrics
     training_steps = 0
-    train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_train", decimal=4)
+    train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_train")
     train_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_train")
     train_silent_label_monitor = SilentLabelsMonitor()
     train_time_monitor = TimeMonitor()
@@ -116,13 +114,12 @@ if __name__ == "__main__":
                                               train_time_monitor],
                                              print_prefix="Train | ")
 
-    test_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_test", decimal=4)
+    test_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_test")
     test_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_test")
     test_learning_rate_monitor = ValueMonitor(name="Learning rate", decimal=5)
     # Only monitor LIF layers
     test_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_silent_monitors = {l: SilentNeuronsMonitor(l.name, export_path=EXPORT_DIR / ("silent_neurons_" + l.name))
-                          for l in network.layers if isinstance(l, LIFLayer)}
+    test_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
     test_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
                           for l in network.layers if isinstance(l, LIFLayer)}
     test_time_monitor = TimeMonitor()
@@ -134,96 +131,113 @@ if __name__ == "__main__":
     test_monitors_manager = MonitorsManager(all_test_monitors,
                                             print_prefix="Test | ")
 
-    best_acc = 0.0
+    # Initialize a dictionary to hold spike count data
+    spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
 
+
+    best_acc = 0.0
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
-        train_time_monitor.start()
-        dataset.shuffle()
+      train_time_monitor.start()
+      dataset.shuffle()
 
-        # Learning rate decay
-        if epoch > 0 and epoch % LR_DECAY_EPOCH == 0:
-            optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
+      # Learning rate decay
+      if epoch > 0 and epoch % LR_DECAY_EPOCH == 0:
+          optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
 
-        for batch_idx in range(N_TRAIN_BATCH):
-            # Get next batch
-            spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
+      for batch_idx in range(N_TRAIN_BATCH):
+          # Get next batch
+          spikes, n_spikes, labels = dataset.get_train_batch(batch_idx, TRAIN_BATCH_SIZE)
 
-            # Inference
-            network.reset()
-            network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
-            out_spikes, n_out_spikes = network.output_spike_trains
+          # Inference
+          network.reset()
+          network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
+          out_spikes, n_out_spikes = network.output_spike_trains
 
-            # Predictions, loss and errors
-            pred = loss_fct.predict(out_spikes, n_out_spikes)
-            loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
+          # Get the spike count from the hidden layer
+          hidden_layer_spike_count = hidden_layer.spike_trains[1].get()
 
-            pred_cpu = pred.get()
-            loss_cpu = loss.get()
-            n_out_spikes_cpu = n_out_spikes.get()
+          # Store the spike count data
+          for i, label in enumerate(labels):
+              spike_counts[label].append(hidden_layer_spike_count[i])
 
-            # Update monitors
-            train_loss_monitor.add(loss_cpu)
-            train_accuracy_monitor.add(pred_cpu, labels)
-            train_silent_label_monitor.add(n_out_spikes_cpu, labels)
+          # Predictions, loss and errors
+          pred = loss_fct.predict(out_spikes, n_out_spikes)
+          loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
 
-            # Compute gradient
-            gradient = network.backward(errors)
-            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g in gradient]
-            del gradient
+          pred_cpu = pred.get()
+          loss_cpu = loss.get()
+          n_out_spikes_cpu = n_out_spikes.get()
 
-            # Apply step
-            deltas = optimizer.step(avg_gradient)
-            del avg_gradient
+          # Update monitors
+          train_loss_monitor.add(loss_cpu)
+          train_accuracy_monitor.add(pred_cpu, labels)
+          train_silent_label_monitor.add(n_out_spikes_cpu, labels)
 
-            network.apply_deltas(deltas)
-            del deltas
+          # Compute gradient
+          gradient = network.backward(errors)
+          avg_gradient = [None if g is None else cp.mean(g, axis=0) for g, layer in zip(gradient, network.layers)]
+          del gradient
 
-            training_steps += 1
-            epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
+          # Apply step
+          deltas = optimizer.step(avg_gradient)
+          del avg_gradient
 
-            # Training metrics
-            if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
-                # Compute metrics
+          network.apply_deltas(deltas)
+          del deltas
 
-                train_monitors_manager.record(epoch_metrics)
-                train_monitors_manager.print(epoch_metrics)
-                train_monitors_manager.export()
+          training_steps += 1
+          epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
 
-            # Test evaluation
-            if training_steps % TEST_PERIOD_STEP == 0:
-                test_time_monitor.start()
-                for batch_idx in range(N_TEST_BATCH):
-                    spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
-                    network.reset()
-                    network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
-                    out_spikes, n_out_spikes = network.output_spike_trains
+          # Training metrics
+          if training_steps % TRAIN_PRINT_PERIOD_STEP == 0:
+              # Compute metrics
 
-                    pred = loss_fct.predict(out_spikes, n_out_spikes)
-                    loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
+              train_monitors_manager.record(epoch_metrics)
+              train_monitors_manager.print(epoch_metrics)
+              train_monitors_manager.export()
 
-                    pred_cpu = pred.get()
-                    loss_cpu = loss.get()
-                    test_loss_monitor.add(loss_cpu)
-                    test_accuracy_monitor.add(pred_cpu, labels)
+          # Test evaluation
+          if training_steps % TEST_PERIOD_STEP == 0:
+              test_time_monitor.start()
+              for batch_idx in range(N_TEST_BATCH):
+                  spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
+                  network.reset()
+                  network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
+                  out_spikes, n_out_spikes = network.output_spike_trains
 
-                    for l, mon in test_spike_counts_monitors.items():
-                        mon.add(l.spike_trains[1])
+                  pred = loss_fct.predict(out_spikes, n_out_spikes)
+                  loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    for l, mon in test_silent_monitors.items():
-                        mon.add(l.spike_trains[1])
+                  pred_cpu = pred.get()
+                  loss_cpu = loss.get()
+                  test_loss_monitor.add(loss_cpu)
+                  test_accuracy_monitor.add(pred_cpu, labels)
 
-                for l, mon in test_norm_monitors.items():
-                    mon.add(l.weights)
+                  for l, mon in test_spike_counts_monitors.items():
+                      mon.add(l.spike_trains[1])
 
-                test_learning_rate_monitor.add(optimizer.learning_rate)
+                  for l, mon in test_silent_monitors.items():
+                      mon.add(l.spike_trains[1])
 
-                records = test_monitors_manager.record(epoch_metrics)
-                test_monitors_manager.print(epoch_metrics)
-                test_monitors_manager.export()
+              for l, mon in test_norm_monitors.items():
+                  mon.add(l.weights)
 
-                acc = records[test_accuracy_monitor]
-                if acc > best_acc:
-                    best_acc = acc
-                    network.store(SAVE_DIR)
-                    print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+              test_learning_rate_monitor.add(optimizer.learning_rate)
+
+              records = test_monitors_manager.record(epoch_metrics)
+              test_monitors_manager.print(epoch_metrics)
+              test_monitors_manager.export()
+
+              acc = records[test_accuracy_monitor]
+              if acc > best_acc:
+                  best_acc = acc
+                  network.store(SAVE_DIR)
+                  print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+      
+      # Calculate average spike counts
+      avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+      
+      # Create a figure to visualize network activity and sparsity
+      create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_Count_Epoch{epoch + 1}')
+      create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_Count_Epoch{epoch + 1}')
