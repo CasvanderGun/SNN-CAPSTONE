@@ -155,3 +155,10 @@ accuracy_dfs = [train_accuracy_stats_df, test_accuracy_count_stats_df]
 accuracy_labels = ['train', 'test count', 'test ttfs']
 create_line_plot_multiple(accuracy_dfs, 'Epoch', 'mean', 'sd', "Accuracy trained on count loss with", accuracy_labels, set_limit=True, blimit=95)
 
+# Loss plotted together
+loss_dfs = []
+create_line_plot_multiple(loss_dfs, 'Epoch', 'mean', 'sd', "Accuracy trained on count loss with", accuracy_labels, set_limit=True, blimit=95)
+
+# Weight norm plotted together
+create_line_plot_multiple(accuracy_dfs, 'Epoch', 'mean', 'sd', "Accuracy trained on count loss with", accuracy_labels, set_limit=True, blimit=95)
+
