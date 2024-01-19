@@ -9,7 +9,7 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         - amount_of_neurons_shown: specifeis how many hidden neurons you want to be plotted
         - vmax: specifies the maximum spike count of the colorbar
         - title: set to the title of the plot
-        - path: set to the name of the experiment, example: train_count_eval_count"""
+        - expirement_name: set to the name of the experiment, example: train_count_eval_count"""
         data_to_plot = np.array([avg_spike_counts[digit] for digit in sorted(avg_spike_counts.keys())])
         plt.figure(figsize=(8, 8))
         custom_map = LinearSegmentedColormap.from_list('custom', ['white', 'lavender', 'yellow', 'red', 'black'])
