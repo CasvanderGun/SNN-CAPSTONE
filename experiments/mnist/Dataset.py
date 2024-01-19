@@ -63,6 +63,14 @@ class Dataset:
     def test_labels(self) -> np.ndarray:
         return self.__test_labels
 
+    def to_spike_train(self, sample):
+        spike_time = sample.reshape((1, N_NEURONS, 1))
+        spike_time = TIME_WINDOW * (1 - (spike_time / MAX_VALUE))
+        spike_time[spike_time == TIME_WINDOW] = np.inf
+        n_spike_per_neuron = np.isfinite(spike_time).astype('int').reshape((1, N_NEURONS))
+        return spike_time, n_spike_per_neuron
+
+
     def __to_spikes(self, samples):
         spike_times = samples.reshape((samples.shape[0], N_NEURONS, 1))
         spike_times = TIME_WINDOW * (1 - (spike_times / MAX_VALUE))
