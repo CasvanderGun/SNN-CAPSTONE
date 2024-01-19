@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
@@ -142,6 +143,9 @@ if __name__ == "__main__":
     test_monitors_manager = MonitorsManager(all_test_monitors,
                                             print_prefix="Test | ")
 
+    # Initialize a dictionary to hold spike count data
+    spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST                                       
+
     best_acc = 0.0
 
     print("Training...")
@@ -211,6 +215,13 @@ if __name__ == "__main__":
             network.reset()
             network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
             out_spikes, n_out_spikes = network.output_spike_trains
+
+            # Get the spike count from the hidden layer
+            hidden_layer_spike_count = hidden_layer.spike_trains[1].get()
+
+            # Store the spike count data
+            for i, label in enumerate(labels):
+                spike_counts[label].append(hidden_layer_spike_count[i])
 
             # Predictions, loss and errors
             pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
@@ -294,3 +305,10 @@ if __name__ == "__main__":
                 best_acc = acc
                 network.store(SAVE_DIR)
                 print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+
+        # Calculate average spike counts
+        avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+        
+        # Create a figure to visualize network activity and sparsity
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_TTFS_Epoch{epoch + 1}', 'train_count_eval_ttfs')
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_TTFS_Epoch{epoch + 1}', 'train_count_eval_ttfs')
