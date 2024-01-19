@@ -25,14 +25,14 @@ N_NEURONS_1 = 800
 TAU_S_1 = 0.130
 THRESHOLD_HAT_1 = 0.7
 DELTA_THRESHOLD_1 = 1 * THRESHOLD_HAT_1
-SPIKE_BUFFER_SIZE_1 = 1
+SPIKE_BUFFER_SIZE_1 = 30
 
 # Output_layer
 N_OUTPUTS = 10
 TAU_S_OUTPUT = 0.130
 THRESHOLD_HAT_OUTPUT = 2.0
 DELTA_THRESHOLD_OUTPUT = 1 * THRESHOLD_HAT_OUTPUT
-SPIKE_BUFFER_SIZE_OUTPUT = 1
+SPIKE_BUFFER_SIZE_OUTPUT = 30
 
 # Training parameters
 N_TRAINING_EPOCHS = 30
@@ -169,8 +169,8 @@ if __name__ == "__main__":
             pred = loss_fct.predict(out_spikes, n_out_spikes)
             loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
 
-            pred_cpu = pred.get()
-            loss_cpu = loss.get()
+            pred_cpu = pred.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+            loss_cpu = loss.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
             n_out_spikes_cpu = n_out_spikes.get()
 
             # Update monitors
@@ -214,8 +214,8 @@ if __name__ == "__main__":
                     pred = loss_fct.predict(out_spikes, n_out_spikes)
                     loss = loss_fct.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    pred_cpu = pred.get()
-                    loss_cpu = loss.get()
+                    pred_cpu = pred.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+                    loss_cpu = loss.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
                     test_loss_monitor.add(loss_cpu)
                     test_accuracy_monitor.add(pred_cpu, labels)
 
