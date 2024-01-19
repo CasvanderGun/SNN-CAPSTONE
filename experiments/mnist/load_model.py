@@ -12,7 +12,7 @@ from experiments.mnist.Dataset import Dataset
 from bats.Layers import InputLayer, LIFLayer
 from bats.Network import Network
 
-
+# These were the settings of a train_decy_rate 
 def load_model(model_path):
     N_INPUTS = 28 * 28
 
