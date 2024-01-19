@@ -25,14 +25,14 @@ N_NEURONS_1 = 800
 TAU_S_1 = 0.130
 THRESHOLD_HAT_1 = 0.7
 DELTA_THRESHOLD_1 = 1 * THRESHOLD_HAT_1
-SPIKE_BUFFER_SIZE_1 = 1
+SPIKE_BUFFER_SIZE_1 = 30
 
 # Output_layer
 N_OUTPUTS = 10
 TAU_S_OUTPUT = 0.130
 THRESHOLD_HAT_OUTPUT = 2.0
 DELTA_THRESHOLD_OUTPUT = 1 * THRESHOLD_HAT_OUTPUT
-SPIKE_BUFFER_SIZE_OUTPUT = 1
+SPIKE_BUFFER_SIZE_OUTPUT = 30
 
 # Training parameters
 N_TRAINING_EPOCHS = 10
@@ -171,8 +171,8 @@ if __name__ == "__main__":
                     pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
                     loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    pred_ttfs_cpu = pred_ttfs.get()
-                    loss_ttfs_cpu = loss_ttfs.get()
+                    pred_ttfs_cpu = pred_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+                    loss_ttfs_cpu = loss_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
                     test_loss_ttfs_monitor.add(loss_ttfs_cpu)
                     test_accuracy_ttfs_monitor.add(pred_ttfs_cpu, labels)
 
@@ -180,8 +180,8 @@ if __name__ == "__main__":
                     pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
                     loss_count = loss_fct_count.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    pred_count_cpu = pred_count.get()
-                    loss_count_cpu = loss_count.get()
+                    pred_count_cpu = pred_count.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+                    loss_count_cpu = loss_count.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
                     test_loss_count_monitor.add(loss_count_cpu)
                     test_accuracy_count_monitor.add(pred_count_cpu, labels)
 
@@ -225,8 +225,8 @@ if __name__ == "__main__":
             pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
             loss_ttfs, errors_ttfs = loss_fct_ttfs.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
 
-            pred_ttfs_cpu = pred_ttfs.get()
-            loss_ttfs_cpu = loss_ttfs.get()
+            pred_ttfs_cpu = pred_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+            loss_ttfs_cpu = loss_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
             n_out_spikes_cpu = n_out_spikes.get()
 
             # Update monitors
