@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
-from experiments.mnist.Dataset.Dataset import Dataset
+from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
 from bats.Losses import *
