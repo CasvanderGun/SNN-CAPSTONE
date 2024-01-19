@@ -173,14 +173,15 @@ if __name__ == "__main__":
                     test_loss_count_monitor.add(loss_count_cpu)
                     test_accuracy_count_monitor.add(pred_count_cpu, labels)
 
-                    # ttfs loss
+                    # ttfs evaluation
                     pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
                     loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
 
                     pred_ttfs_cpu = pred_ttfs.get()
+                    cor_pred_ttfs = pred_ttfs_cpu[::30]
                     loss_ttfs_cpu = loss_ttfs.get()
                     test_loss_ttfs_monitor.add(loss_ttfs_cpu)
-                    test_accuracy_ttfs_monitor.add(pred_ttfs_cpu, labels)
+                    test_accuracy_ttfs_monitor.add(cor_pred_ttfs, labels)
 
                     for l, mon in test_spike_counts_monitors.items():
                         mon.add(l.spike_trains[1])
