@@ -237,7 +237,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path):
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
-      # Calculate average spike counts
+        # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         
         # Create a figure to visualize network activity and sparsity
