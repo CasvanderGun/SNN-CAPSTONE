@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
@@ -140,6 +141,9 @@ if __name__ == "__main__":
     all_test_monitors.append(test_time_monitor)
     test_monitors_manager = MonitorsManager(all_test_monitors,
                                             print_prefix="Test | ")
+    
+    # Initialize a dictionary to hold spike count data
+    spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
 
     best_acc = 0.0
 
@@ -210,6 +214,13 @@ if __name__ == "__main__":
             network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
             out_spikes, n_out_spikes = network.output_spike_trains
 
+            # Get the spike count from the hidden layer
+            hidden_layer_spike_count = hidden_layer.spike_trains[1].get()
+
+            # Store the spike count data
+            for i, label in enumerate(labels):
+                spike_counts[label].append(hidden_layer_spike_count[i])
+
             # Predictions, loss and errors
             pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
             loss_ttfs, errors_ttfs = loss_fct_ttfs.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
@@ -245,4 +256,11 @@ if __name__ == "__main__":
                 train_monitors_manager.record(epoch_metrics)
                 train_monitors_manager.print(epoch_metrics)
                 train_monitors_manager.export()
+
+        # Calculate average spike counts
+        avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+        
+        # Create a figure to visualize network activity and sparsity
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_Count_Epoch{epoch + 1}', 'train_ttfs_eval_count')
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_Count_Epoch{epoch + 1}', 'train_ttfs_eval_count')
 
