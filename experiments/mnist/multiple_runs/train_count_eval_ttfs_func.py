@@ -150,6 +150,55 @@ def train_count_eval_ttfs(epochs, export_path):
 
     best_acc = 0.0
 
+    # initial no training accuracy
+    epoch_metrics = 0.0
+    test_time_monitor.start()
+    for batch_idx in range(N_TEST_BATCH):
+        spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
+        network.reset()
+        network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
+        out_spikes, n_out_spikes = network.output_spike_trains
+        
+        # ttfs evaluation
+        pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
+        loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
+
+        pred_ttfs_cpu = pred_ttfs.get()
+        cor_pred_ttfs = pred_ttfs_cpu[::30]
+        loss_ttfs_cpu = loss_ttfs.get()
+        test_loss_ttfs_monitor.add(loss_ttfs_cpu)
+        test_accuracy_ttfs_monitor.add(cor_pred_ttfs, labels)
+
+        # count evaluation
+        pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
+        loss_count = loss_fct_count.compute_loss(out_spikes, n_out_spikes, labels)
+
+        pred_count_cpu = pred_count.get()
+        loss_count_cpu = loss_count.get()
+        test_loss_count_monitor.add(loss_count_cpu)
+        test_accuracy_count_monitor.add(pred_count_cpu, labels)
+
+        for l, mon in test_spike_counts_monitors.items():
+            mon.add(l.spike_trains[1])
+
+        for l, mon in test_silent_monitors.items():
+            mon.add(l.spike_trains[1])
+
+    for l, mon in test_norm_monitors.items():
+        mon.add(l.weights)
+
+    test_learning_rate_monitor.add(optimizer.learning_rate)
+
+    records = test_monitors_manager.record(epoch_metrics)
+    test_monitors_manager.print(epoch_metrics)
+    test_monitors_manager.export()
+
+    acc = records[test_accuracy_count_monitor]
+    if acc > best_acc:
+        best_acc = acc
+        network.store(SAVE_DIR)
+        print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
         train_time_monitor.start()
@@ -158,55 +207,6 @@ def train_count_eval_ttfs(epochs, export_path):
         # Learning rate decay
         if epoch > 0 and epoch % LR_DECAY_EPOCH == 0:
             optimizer.learning_rate = np.maximum(LR_DECAY_FACTOR * optimizer.learning_rate, MIN_LEARNING_RATE)
-        
-        # initial no training accuracy
-        epoch_metrics = 0.0
-        test_time_monitor.start()
-        for batch_idx in range(N_TEST_BATCH):
-            spikes, n_spikes, labels = dataset.get_test_batch(batch_idx, TEST_BATCH_SIZE)
-            network.reset()
-            network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
-            out_spikes, n_out_spikes = network.output_spike_trains
-            
-            # ttfs evaluation
-            pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
-            loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
-
-            pred_ttfs_cpu = pred_ttfs.get()
-            cor_pred_ttfs = pred_ttfs_cpu[::30]
-            loss_ttfs_cpu = loss_ttfs.get()
-            test_loss_ttfs_monitor.add(loss_ttfs_cpu)
-            test_accuracy_ttfs_monitor.add(cor_pred_ttfs, labels)
-
-            # count evaluation
-            pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
-            loss_count = loss_fct_count.compute_loss(out_spikes, n_out_spikes, labels)
-
-            pred_count_cpu = pred_count.get()
-            loss_count_cpu = loss_count.get()
-            test_loss_count_monitor.add(loss_count_cpu)
-            test_accuracy_count_monitor.add(pred_count_cpu, labels)
-
-            for l, mon in test_spike_counts_monitors.items():
-                mon.add(l.spike_trains[1])
-
-            for l, mon in test_silent_monitors.items():
-                mon.add(l.spike_trains[1])
-
-        for l, mon in test_norm_monitors.items():
-            mon.add(l.weights)
-
-        test_learning_rate_monitor.add(optimizer.learning_rate)
-
-        records = test_monitors_manager.record(epoch_metrics)
-        test_monitors_manager.print(epoch_metrics)
-        test_monitors_manager.export()
-
-        acc = records[test_accuracy_count_monitor]
-        if acc > best_acc:
-            best_acc = acc
-            network.store(SAVE_DIR)
-            print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
         for batch_idx in range(N_TRAIN_BATCH):
             # Get next batch
