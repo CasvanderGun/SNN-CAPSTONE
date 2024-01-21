@@ -8,7 +8,7 @@ from multiple_runs.train_count_eval_ttfs_func import train_count_eval_ttfs
 epochs = 2
 num_runs = 2
 
-path = 'kaggle/working/SNN-CAPSTONE/results/train_multiple_runsv2/Run_'
+path = '/kaggle/working/SNN-CAPSTONE/results/train_multiple_runsv2/Run_'
 
 for run in range(num_runs):
     print('Run: ' + str(run + 1))
