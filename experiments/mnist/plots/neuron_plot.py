@@ -20,7 +20,7 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         custom_map = LinearSegmentedColormap.from_list('custom', ['white', 'lavender', 'yellow', 'red', 'black'])
         plt.imshow(data_to_plot, cmap=custom_map, interpolation='nearest', origin='lower', aspect=amount_of_neurons_shown/10, vmin=0, vmax=vmax)
         plt.xlim(0,amount_of_neurons_shown)
-        plt.yticks(np.arange(9))
+        plt.yticks(np.arange(10))
         plt.colorbar()
         plt.xlabel('Hiddden Neuron Index')
         plt.ylabel('Label')
