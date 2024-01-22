@@ -7,6 +7,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
+from experiments.mnist.load_model import plot_spike_train, get_image
 from experiments.mnist.plots.neuron_plot import create_spike_count_map
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
@@ -14,6 +15,7 @@ from bats.Layers import InputLayer, LIFLayer
 from bats.Losses import *
 from bats.Network import Network
 from bats.Optimizers import *
+
 
 def train_count_eval_ttfs(epochs, export_path):
     # Dataset
@@ -304,6 +306,9 @@ def train_count_eval_ttfs(epochs, export_path):
                     best_acc = acc
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+
+                    image = get_image(0)
+                    plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)
 
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
