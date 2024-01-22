@@ -70,7 +70,6 @@ def get_image(index):
     DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
-    print("Loading datasets...")
     dataset = Dataset(path=DATASET_PATH)
 
     # get the first image
@@ -94,7 +93,6 @@ def get_spike_train(image, model, sim_time):
     DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
-    print("Loading datasets...")
     dataset = Dataset(path=DATASET_PATH)
 
     # input spike trains
