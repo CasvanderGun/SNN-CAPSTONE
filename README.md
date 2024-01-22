@@ -1,4 +1,8 @@
-# Error Backpropagation Through Spikes (BATS)
+# SNN CAPSTONE PROJECT
+
+
+
+## Error Backpropagation Through Spikes (BATS)
 
 Error Backpropagation Through Spikes (BATS) [1] is a GPU-compatible algorithm that extends Fast & Deep [2], 
 a method to performs exact gradient descent in Deep Spiking Neural Networks (SNNs). 
@@ -27,29 +31,13 @@ Python packages:
 
 ## Experiments
 
+
 Three experiments are available: a single-spike vs multi-spike convergence 
-experiment as well as trainings on the MNIST and EMNIST datasets.
+experiment as well as trainings on the MNIST.
 
-### Convergence experiment
+### Download dataset
 
-```console
-$ cd experiments/convergence
-$ ls
-convergence_count.py  convergence_ttfs.py
-$ python3 convergence_count.py
-...
-$ python3 convergence_ttfs.py
-...
-$ ls *.pdf
-convergence_count.pdf  convergence_ttfs.pdf
-```
-
-Running these python scripts should take a few minutes. 
-The models are trained 100 times for different initial weight distributions.
-After execution, each script generates a corresponding .pdf file, 
-i.e. <em>convergence_count.pdf</em> and <em>convergence_ttfs.pdf</em>
-
-### Download datasets
+For our experiments we only considered MNIST. It's possible to download MNIST by navigating to the datasets directory and running the 'get_mnist.py' script. This will result in the download of the MNIST dataset into the datasets folder.
 
 #### MNIST
 
