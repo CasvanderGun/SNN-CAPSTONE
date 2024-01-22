@@ -75,3 +75,4 @@ axes[2].set_ylabel('weight norm')
 
 plt.show()
 
+
