@@ -54,7 +54,7 @@ download_file.py get_mnist.py  mnist.npz
 
 ### Saving the results
 
-During the experiments, plots and data are saved in the <em>output_metrics</em> directory, while weights of the best model are saved in the <em>best_model</em> directory. For each experiment there is a separate directory in which the <em>output_metrics</em> and <em>best_model</em> directories can be found. The 
+During the experiments, plots and data are saved in the <em>output_metrics</em> directory, while weights of the best model are saved in the <em>best_model</em> directory. For each experiment there is a separate directory in which the <em>output_metrics</em> and <em>best_model</em> directories can be found.
 
 Prior to running an experiment the results directory for the respective experiment must exist. This can be done by navigating to the <em>results</em> directory and creating a new directory with the respective experiment name. Note that the results directory is hardcoded into the experiments. 
 
