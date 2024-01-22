@@ -120,13 +120,4 @@ def plot_spike_train(image, model, sim_time, title, save_path):
     plt.xticks(np.linspace(0, sim_time, 5))
     plt.yticks(np.arange(10))
     plt.savefig(save_path + f'/{title}')
-
-model_path = "/content/SNN-CAPSTONE/results/train_decay_rate/Simulation_time_0.2/decay_rate_1/best_model"
-save_path = '/content/SNN-CAPSTONE/experiments/mnist/plots'
-sim_time = 0.2
-
-model = load_model(model_path)
-image = get_image(0)
-
-plot_spike_train(image, model, sim_time, 'spike train decay', save_path)
-print('Image Exported')
+    
