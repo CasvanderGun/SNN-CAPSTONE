@@ -59,8 +59,8 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
 
     # Plot parameters
     EXPORT_METRICS = True
-    EXPORT_DIR = Path(export_path + "/output_metrics")
-    SAVE_DIR = Path(export_path + "/best_model")
+    EXPORT_DIR = Path(root_path + export_path + "/output_metrics")
+    SAVE_DIR = Path(root_path + export_path + "/best_model")
 
 
     def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
@@ -313,6 +313,6 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         
         # Create a figure to visualize network activity and sparsity
-        os.makedirs(export_path + '/neuron_plots', exist_ok=True)
+        os.makedirs(root_path + export_path + '/neuron_plots', exist_ok=True)
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_eval_Count_Epoch{epoch + 1}', export_path, root_path)
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_eval_Count_Epoch{epoch + 1}', export_path, root_path)
