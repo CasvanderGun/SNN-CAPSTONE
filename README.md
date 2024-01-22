@@ -33,7 +33,7 @@ Python packages:
 
 ## 3. Experiments
 
-There are X experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results be saved.
+There are X experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results can be saved.
 
 ### Downloading the dataset
 
@@ -54,7 +54,7 @@ download_file.py get_mnist.py  mnist.npz
 
 ### Saving the results
 
-During the experiments, plots and data are saved in the <em>output_metrics</em> directory, while weights of the best model are saved in the <em>best_model</em> directory. For each experiment there is a separate directory in which the <em>output_metrics</em> and <em>best_model</em> directories can be found. The 
+During the experiments, plots and data are saved in the <em>output_metrics</em> directory, while weights of the best model are saved in the <em>best_model</em> directory. For each experiment there is a separate directory in which the <em>output_metrics</em> and <em>best_model</em> directories can be found.
 
 Prior to running an experiment the results directory for the respective experiment must exist. This can be done by navigating to the <em>results</em> directory and creating a new directory with the respective experiment name. Note that the results directory is hardcoded into the experiments. 
 
@@ -82,21 +82,62 @@ train_ttfs_eval_ttfs  train_count_eval_count
 
 
 
-#### Experiment 1
-Tree models are available to train with the MNIST dataset: 
+#### Experiment 1: single-spike ttfs loss (evaluated on ttfs loss)
+This experiment is used to reproduce the single-spike time-to-first-spike loss implementation by Bacho and Chu, based on the work by Göltz et al. 
 
-- a single-spike model (<em>train_ttfs.py</em>)
 ```console
 $ cd experiments/mnist
-$ python3 train_ttfs.py
+$ python3 train_ttfs_eval_ttfs_single_spike.py
 ...
 ```
 
-#### Experiment 2
-- a multi-spike model (<em>train_spike_count.py</em>)
+#### Experiment 2: multi-spike count loss (evaluated on count loss)
+This experiment is used to reproduce the multi-spike spike-count loss implementation by Bacho and Chu. 
+
 ```console
 $ cd experiments/mnist
-$ python3 train_spike_count.py
+$ python3 train_count_eval_count.py
+...
+```
+
+#### Experiment 3: multi-spike ttfs loss (evaluated on ttfs loss)
+This experiment is used to extend the single-spike time-to-first-spike loss implementation to allow multiple spikes per neuron. 
+
+
+```console
+$ cd experiments/mnist
+$ python3 train_ttfs_eval_ttfs.py
+...
+```
+
+#### Experiment 4: multi-spike count loss (evaluated on ttfs loss)
+This experiment is used to cross validate the time-to-first-spike loss function with the spike-count loss function.
+
+
+```console
+$ cd experiments/mnist
+$ python3 train_count_eval_ttfs.py
+...
+```
+
+
+#### Experiment 5: multi-spike ttfs loss (evaluated on count loss)
+This experiment is used to cross validate the spike-count loss function with the time-to-first-spike loss function.
+
+
+```console
+$ cd experiments/mnist
+$ python3 train_ttfs_eval_count.py
+...
+```
+
+
+#### Experiment 6: multi-spike time-weighted loss (evaluated on time weighted loss)
+This experiment is used to implement and evaluate our own time-weighted loss function.
+
+```console
+$ cd experiments/mnist
+$ python3 train_time_weighted_eval_time_weighted.py
 ...
 ```
 

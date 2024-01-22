@@ -37,10 +37,10 @@ train_accuracy_data = []
 train_loss_data = []
 test_accuracy_count_data = []
 test_accuracy_ttfs_data = []
+test_accuracy_decay_data = []
 test_loss_count_data = []
 test_loss_ttfs_data = []
-weight_norm_hid_data = []
-weight_norm_out_data = []
+weight_norm_data = []
 silent_neurons_data = []      
 
 # Iterate through each run's loaded data
@@ -52,10 +52,10 @@ for run_key, run_data in list_data.items():
     silent_neurons_dict = {'Run': run_key}
     test_accuracy_count_dict = {'Run': run_key}
     test_accuracy_ttfs_dict = {'Run': run_key}
+    test_accuracy_decay_dict = {'Run': run_key}
     test_loss_count_dict = {'Run': run_key}
     test_loss_ttfs_dict = {'Run': run_key}
-    weight_norm_hid_dict = {'Run': run_key}
-    weight_norm_out_dict = {'Run': run_key}
+    weight_norm_dict = {'Run': run_key}
 
     # Populate dictionaries with data for each metric and add to list
     for file_data in run_data:
@@ -75,28 +75,28 @@ for run_key, run_data in list_data.items():
         elif "accuracy_ttfs_test" in file_data['filename']:
             test_accuracy_ttfs_dict.update(action)
             test_accuracy_ttfs_data.append(test_accuracy_ttfs_dict)
+        elif "accuracy_decay_test" in file_data['filename']:
+            test_accuracy_decay_dict.update(action)
+            test_accuracy_decay_data.append(test_accuracy_decay_dict)
         elif "loss_count_test" in file_data['filename']:
             test_loss_count_dict.update(action)
             test_loss_count_data.append(test_loss_count_dict)
         elif "loss_ttfs_test" in file_data['filename']:
             test_loss_ttfs_dict.update(action)
             test_loss_ttfs_data.append(test_loss_ttfs_dict)
-        elif "weight_norm_Hidden" in file_data['filename']:
-            weight_norm_hid_dict.update(action)
-            weight_norm_hid_data.append(weight_norm_hid_dict)
-        elif "weight_norm_Output" in file_data['filename']:
-            weight_norm_out_dict.update(action)
-            weight_norm_out_data.append(weight_norm_out_dict)
+        elif "weight_norm" in file_data['filename']:
+            weight_norm_dict.update(action)
+            weight_norm_data.append(weight_norm_dict)
 
 # Create dataframes for accuracy, loss, weight norm, and silent_neurons
 train_accuracy_df = pd.DataFrame(train_accuracy_data)
 train_loss_df = pd.DataFrame(train_loss_data)
 test_accuracy_count_df = pd.DataFrame(test_accuracy_count_data)
 test_accuracy_ttfs_df = pd.DataFrame(test_accuracy_ttfs_data)
+test_accuracy_decay_df = pd.DataFrame(test_accuracy_ttfs_data)
 test_loss_count_df = pd.DataFrame(test_loss_count_data)
 test_loss_ttfs_df = pd.DataFrame(test_loss_ttfs_data)
-weight_norm_hid_df = pd.DataFrame(weight_norm_hid_data)
-weight_norm_out_df = pd.DataFrame(weight_norm_out_data)
+weight_norm_df = pd.DataFrame(weight_norm_data)
 silent_neurons_df = pd.DataFrame(silent_neurons_data)
 
 def extract_stats(df):
@@ -117,10 +117,10 @@ train_accuracy_stats_df = extract_stats(train_accuracy_df)
 train_loss_stats_df = extract_stats(train_loss_df)
 test_accuracy_count_stats_df = extract_stats(test_accuracy_count_df)
 test_accuracy_ttfs_stats_df = extract_stats(test_accuracy_ttfs_df)
+test_accuracy_decay_stats_df = extract_stats(test_accuracy_decay_df)
 test_loss_count_stats_df = extract_stats(test_loss_count_df)
 test_loss_ttfs_stats_df = extract_stats(test_loss_ttfs_df)
-weight_norm_hid_stats_df = extract_stats(weight_norm_hid_df)
-weight_norm_out_stats_df = extract_stats(weight_norm_out_df)
+weight_norm_stats_df = extract_stats(weight_norm_df)
 silent_neurons_stats_df = extract_stats(silent_neurons_df)
 
 def create_line_plot(df, x_name, y_name, r, title, label):
