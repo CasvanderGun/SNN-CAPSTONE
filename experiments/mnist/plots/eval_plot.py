@@ -37,8 +37,10 @@ train_accuracy_data = []
 train_loss_data = []
 test_accuracy_count_data = []
 test_accuracy_ttfs_data = []
+test_accuracy_decay_data = []
 test_loss_count_data = []
 test_loss_ttfs_data = []
+test_loss_decay_data = []
 weight_norm_data = []
 silent_neurons_data = []      
 
@@ -51,8 +53,10 @@ for run_key, run_data in list_data.items():
     silent_neurons_dict = {'Run': run_key}
     test_accuracy_count_dict = {'Run': run_key}
     test_accuracy_ttfs_dict = {'Run': run_key}
+    test_accuracy_decay_dict = {'Run': run_key}
     test_loss_count_dict = {'Run': run_key}
     test_loss_ttfs_dict = {'Run': run_key}
+    test_loss_decay_dict = {'Run': run_key}
     weight_norm_dict = {'Run': run_key}
 
     # Populate dictionaries with data for each metric and add to list
@@ -73,12 +77,18 @@ for run_key, run_data in list_data.items():
         elif "accuracy_ttfs_test" in file_data['filename']:
             test_accuracy_ttfs_dict.update(action)
             test_accuracy_ttfs_data.append(test_accuracy_ttfs_dict)
+        elif "accuracy_decay_test" in file_data['filename']:
+            test_accuracy_decay_dict.update(action)
+            test_accuracy_decay_data.append(test_accuracy_decay_dict)
         elif "loss_count_test" in file_data['filename']:
             test_loss_count_dict.update(action)
             test_loss_count_data.append(test_loss_count_dict)
         elif "loss_ttfs_test" in file_data['filename']:
             test_loss_ttfs_dict.update(action)
             test_loss_ttfs_data.append(test_loss_ttfs_dict)
+        elif "loss_decay_test" in file_data['filename']:
+            test_loss_decay_dict.update(action)
+            test_loss_decay_data.append(test_loss_decay_dict)
         elif "weight_norm" in file_data['filename']:
             weight_norm_dict.update(action)
             weight_norm_data.append(weight_norm_dict)
@@ -88,8 +98,10 @@ train_accuracy_df = pd.DataFrame(train_accuracy_data)
 train_loss_df = pd.DataFrame(train_loss_data)
 test_accuracy_count_df = pd.DataFrame(test_accuracy_count_data)
 test_accuracy_ttfs_df = pd.DataFrame(test_accuracy_ttfs_data)
+test_accuracy_decay_df = pd.DataFrame(test_accuracy_ttfs_data)
 test_loss_count_df = pd.DataFrame(test_loss_count_data)
 test_loss_ttfs_df = pd.DataFrame(test_loss_ttfs_data)
+test_loss_decay_df = pd.DataFrame(test_loss_ttfs_data)
 weight_norm_df = pd.DataFrame(weight_norm_data)
 silent_neurons_df = pd.DataFrame(silent_neurons_data)
 
@@ -111,8 +123,10 @@ train_accuracy_stats_df = extract_stats(train_accuracy_df)
 train_loss_stats_df = extract_stats(train_loss_df)
 test_accuracy_count_stats_df = extract_stats(test_accuracy_count_df)
 test_accuracy_ttfs_stats_df = extract_stats(test_accuracy_ttfs_df)
+test_accuracy_decay_stats_df = extract_stats(test_accuracy_decay_df)
 test_loss_count_stats_df = extract_stats(test_loss_count_df)
 test_loss_ttfs_stats_df = extract_stats(test_loss_ttfs_df)
+test_loss_decay_stats_df = extract_stats(test_loss_decay_df)
 weight_norm_stats_df = extract_stats(weight_norm_df)
 silent_neurons_stats_df = extract_stats(silent_neurons_df)
 
