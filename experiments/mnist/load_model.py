@@ -75,7 +75,7 @@ def get_image(index):
     # get the first image
     im = dataset.get_test_image_at_index(index)
 
-    return im.astype(np.float)
+    return im.astype(np.float64)
 
 def show_image(index, path, title = ''):
     im = get_image(index)

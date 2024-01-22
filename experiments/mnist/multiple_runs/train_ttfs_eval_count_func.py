@@ -38,7 +38,7 @@ def train_ttfs_eval_count(epochs, export_path):
     SPIKE_BUFFER_SIZE_OUTPUT = 30
 
     # Training parameters
-    N_TRAINING_EPOCHS = 10
+    N_TRAINING_EPOCHS = epochs
     N_TRAIN_SAMPLES = 60000
     N_TEST_SAMPLES = 10000
     TRAIN_BATCH_SIZE = 50
