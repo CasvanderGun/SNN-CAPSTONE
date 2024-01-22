@@ -6,6 +6,7 @@ import sys
 
 sys.path.insert(0, "../../")  # Add repository root to python path
 
+from experiments.mnist.load_model import plot_spike_train, get_image
 from Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
@@ -224,3 +225,6 @@ if __name__ == "__main__":
                     best_acc = acc
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
+
+                    image = get_image(0)
+                    plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)

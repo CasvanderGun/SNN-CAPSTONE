@@ -1,4 +1,8 @@
-# Error Backpropagation Through Spikes (BATS)
+# SNN CAPSTONE PROJECT
+
+
+
+## Error Backpropagation Through Spikes (BATS)
 
 Error Backpropagation Through Spikes (BATS) [1] is a GPU-compatible algorithm that extends Fast & Deep [2], 
 a method to performs exact gradient descent in Deep Spiking Neural Networks (SNNs). 
@@ -27,29 +31,13 @@ Python packages:
 
 ## Experiments
 
+
 Three experiments are available: a single-spike vs multi-spike convergence 
-experiment as well as trainings on the MNIST and EMNIST datasets.
+experiment as well as trainings on the MNIST.
 
-### Convergence experiment
+### Download dataset
 
-```console
-$ cd experiments/convergence
-$ ls
-convergence_count.py  convergence_ttfs.py
-$ python3 convergence_count.py
-...
-$ python3 convergence_ttfs.py
-...
-$ ls *.pdf
-convergence_count.pdf  convergence_ttfs.pdf
-```
-
-Running these python scripts should take a few minutes. 
-The models are trained 100 times for different initial weight distributions.
-After execution, each script generates a corresponding .pdf file, 
-i.e. <em>convergence_count.pdf</em> and <em>convergence_ttfs.pdf</em>
-
-### Download datasets
+For our experiments we only considered MNIST. It's possible to download MNIST by navigating to the datasets directory and running the 'get_mnist.py' script. This will result in the download of the MNIST dataset into the datasets folder.
 
 #### MNIST
 
@@ -63,43 +51,6 @@ Downloading MNIST...
 Done.
 $ ls
 download_file.py  get_emnist.py  get_fashion_mnist.py get_mnist.py  mnist.npz
-```
-
-#### EMNIST
-
-```console
-$ cd datasets
-$ ls
-download_file.py  get_emnist.py  get_fashion_mnist.py  get_mnist.py
-$ python3 get_emnist.py
-Downloading EMNIST...
-[██████████████████████████████████████████████████]
-Done.
-Extracting EMNIST...
-Done.
-Cleaning...
-Done.
-$ ls
-download_file.py  emnist-balanced.mat  get_emnist.py  get_fashion_mnist.py  get_mnist.py
-```
-Downloading the EMNIST dataset may take a few minutes due to the size of the file.
-
-#### Fashion MNIST
-
-```console
-$ cd datasets
-$ ls
-download_file.py     get_emnist.py        get_fashion_mnist.py get_mnist.py
-$ python3 get_fashion_mnist.py
-Downloading Fashion MNIST...
-[██████████████████████████████████████████████████]
-[██████████████████████████████████████████████████]
-[██████████████████████████████████████████████████]
-[██████████████████████████████████████████████████]
-Done.
-$ ls
-download_file.py           get_fashion_mnist.py       t10k-images-idx3-ubyte.gz  train-images-idx3-ubyte.gz
-get_emnist.py              get_mnist.py               t10k-labels-idx1-ubyte.gz  train-labels-idx1-ubyte.gz
 ```
 
 ### Train models
