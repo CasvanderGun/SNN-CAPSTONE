@@ -288,3 +288,5 @@ def train_ttfs(epochs, export_path, root_path):
         os.makedirs(root_path + export_path + "/neuron_plots/", exist_ok=True)
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
+
+train_ttfs(30, "kaggle/working/", 'SNN-CAPSTONE/results/train_ttfs_eval_ttfs')
