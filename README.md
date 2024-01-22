@@ -33,7 +33,7 @@ Python packages:
 
 ## 3. Experiments
 
-There are X experiments available in our repository. These are the experiments we ran to obtain the results used for our project. 
+There are X experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results be saved.
 
 ### Downloading the dataset
 
@@ -56,7 +56,7 @@ download_file.py get_mnist.py  mnist.npz
 
 During the experiments, plots and data are saved in the <em>output_metrics</em> directory, while weights of the best model are saved in the <em>best_model</em> directory. For each experiment there is a separate directory in which the <em>output_metrics</em> and <em>best_model</em> directories can be found. The 
 
-Prior to running an experiment the results directory for the respective experiment must exist. This can be done by navigating to the <em>experiments/mnist</em> directory and creating a new directory with the respective experiment name. Note that the results directory is hardcoded into the experiments. 
+Prior to running an experiment the results directory for the respective experiment must exist. This can be done by navigating to the <em>results</em> directory and creating a new directory with the respective experiment name. Note that the results directory is hardcoded into the experiments. 
 
 ```console
 $ cd results
@@ -64,29 +64,35 @@ $ mkdir <experiment_name_placeholder>
 ...
 ```
 
-For example, to run the <em>train_count_eval_count.py</em> experiment script, a directory with the name <em>train_count_eval_count</em> must be created in the <em>experiments/mnist</em>.
+For example, to run the <em>train_count_eval_count.py</em> experiment script, a directory with the name <em>train_count_eval_count</em> must exist in the <em>results</em> directory.
 
 ```console
 $ cd results
 $ ls
-
+train_ttfs_eval_ttfs
 $ mkdir train_count_eval_count
 $ ls
-train_count_eval_count
+train_ttfs_eval_ttfs  train_count_eval_count
 ...
 ```
 
 
 ### Running the experiments
 
+
+
+
 #### Experiment 1
 Tree models are available to train with the MNIST dataset: 
+
 - a single-spike model (<em>train_ttfs.py</em>)
 ```console
 $ cd experiments/mnist
 $ python3 train_ttfs.py
 ...
 ```
+
+#### Experiment 2
 - a multi-spike model (<em>train_spike_count.py</em>)
 ```console
 $ cd experiments/mnist
