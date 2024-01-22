@@ -315,6 +315,6 @@ def train_count_eval_ttfs(epochs, export_path):
         
         # Create a figure to visualize network activity and sparsity
         os.makedirs(export_path + '/neuron_plots', exist_ok=True)
-        create_spike_count_map(avg_spike_counts, 800, 15, f"Epoch{epoch+1}_train_count_eval_ttfs_800", export_path)
-        create_spike_count_map(avg_spike_counts, 100, 15, f"Epoch{epoch+1}_train_count_eval_ttfs_100", export_path)
+        create_spike_count_map(avg_spike_counts, 800, 15, f"Epoch{epoch+1}_train_count_eval_ttfs_800", export_path, '/content/SNN-CAPSTONE/')
+        create_spike_count_map(avg_spike_counts, 100, 15, f"Epoch{epoch+1}_train_count_eval_ttfs_100", export_path, '/content/SNN-CAPSTONE/')
 

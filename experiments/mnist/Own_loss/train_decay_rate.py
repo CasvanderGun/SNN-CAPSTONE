@@ -249,8 +249,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path):
         # Create a figure to visualize network activity and sparsity
         simulation_time_str = '{:.0e}'.format(simulation_time)
         decay_rate_str = '{:.0e}'.format(decay_rate)
-        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'train_decay_rate')
-        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'train_decay_rate')
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'train_decay_rate', '/content/SNN-CAPSTONE/')
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'train_decay_rate', '/content/SNN-CAPSTONE/')
 
 
 
