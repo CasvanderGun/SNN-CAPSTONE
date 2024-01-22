@@ -13,5 +13,5 @@ path = '/SNN-CAPSTONE/results/train_ttfs_eval_count/train_multiple_runs/Run_'
 
 for run in range(num_runs):
     print('Run: ' + str(run + 1))
-    os.makedirs(path + str(run + 1), exist_ok=True)
+    os.makedirs(root_path + path + str(run + 1), exist_ok=True)
     train_ttfs_eval_count(epochs, path + str(run + 1), root_path)
