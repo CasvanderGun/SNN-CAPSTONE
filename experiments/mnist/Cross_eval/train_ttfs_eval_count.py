@@ -168,6 +168,7 @@ if __name__ == "__main__":
                     network.reset()
                     network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME)
                     out_spikes, n_out_spikes = network.output_spike_trains
+                    
                     # ttfs loss
                     pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
                     loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
