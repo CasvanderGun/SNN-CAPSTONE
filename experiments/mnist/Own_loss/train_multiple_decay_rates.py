@@ -6,7 +6,7 @@ from experiments.mnist.Own_loss.train_decay_rate import train_decay_rate
 
 epochs = 20
 simulation_time = 0.2
-decay_rates = [3, 2, 1, 0.5]
+decay_rates = [1]
 
 path = "/content/SNN-CAPSTONE/results/train_decay_rate/Simulation_time_0.2/decay_rate_"
 
