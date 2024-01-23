@@ -75,7 +75,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
     print(f"Numpy seed: {np_seed}, Cupy seed: {cp_seed}")
 
     if EXPORT_METRICS and not EXPORT_DIR.exists():
-        EXPORT_DIR.mkdir()
+        EXPORT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dataset
     print("Loading datasets...")
