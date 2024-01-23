@@ -17,6 +17,6 @@ print('\nTotal runs: ', runs)
 print(f'Epochs: {epochs} \tsimulation time: {simulation_time} \tdecay rate {decay_rate}')
 for run in range(runs):
     print('\nRun: ' + str(run + 1) + '\n')
-    run_path = paMultiple_runs_decay_rateth + str(run + 1)
+    run_path = path + str(run + 1)
     os.makedirs(run_path , exist_ok=True)
     train_decay_rate(epochs, decay_rate, simulation_time, run_path, root_path)
