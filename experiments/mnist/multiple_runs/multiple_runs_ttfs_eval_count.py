@@ -6,7 +6,7 @@ sys.path.insert(0, "../")  # Add repository root to python path
 from multiple_runs.train_ttfs_eval_count_func import train_ttfs_eval_count
 
 epochs = 30
-num_runs = 2
+num_runs = 1
 
 root_path = "/kaggle/working"
 path = '/SNN-CAPSTONE/results/train_ttfs_eval_count/train_multiple_runs/Run_'

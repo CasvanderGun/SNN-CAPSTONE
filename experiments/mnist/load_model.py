@@ -119,3 +119,9 @@ def plot_spike_train(image, model, sim_time, title, save_path):
     plt.yticks(np.arange(10))
     plt.savefig(str(save_path) + f'/{title}')
 
+def plot_all_spike_trains(model, sim_time, title, save_folder):
+    indices = np.arange(20)
+    
+    for i in indices:
+        image = get_image(i)
+        plot_spike_train(image, model, sim_time, title + f'_{i}', save_folder)
