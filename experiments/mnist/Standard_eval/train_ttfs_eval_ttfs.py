@@ -246,3 +246,4 @@ if __name__ == "__main__":
         # Create a figure to visualize network activity and sparsity
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
+
