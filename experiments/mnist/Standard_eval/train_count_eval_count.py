@@ -240,6 +240,6 @@ if __name__ == "__main__":
       avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
       
       # Create a figure to visualize network activity and sparsity
-      create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_Count_Epoch{epoch + 1}', 'train_count_eval_count', '/content/SNN-CAPSTONE/')
-      create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_Count_Epoch{epoch + 1}', 'train_count_eval_count', '/content/SNN-CAPSTONE/')
+      create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_Count_Epoch{epoch + 1}', 'train_count_eval_count', '/kaggle/working/SNN-CAPSTONE/')
+      create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_Count_Epoch{epoch + 1}', 'train_count_eval_count', '/kaggle/working/SNN-CAPSTONE/')
       
