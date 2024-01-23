@@ -11,7 +11,7 @@ decay_rate = 1
 runs = 3
 
 root_path = '/kaggle/working/SNN-CAPSTONE/'
-path = root_path + "results/train_decay_rate/multiple_runs_decay_rate/Run_"
+path = root_path + "results/train_decay_rate/multiple_runs/Run_"
 
 for run in range(runs):
     print('\nRun: ' + str(run + 1) + '\n')
