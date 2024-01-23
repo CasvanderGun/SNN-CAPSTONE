@@ -4,39 +4,38 @@ import numpy as np
 
 import sys
 
-sys.path.insert(0, "../../")  # Add repository root to python path
+sys.path.insert(0, "../../../")  # Add repository root to python path
 
-from experiments.mnist.load_model import plot_spike_train, get_image
-from Dataset import Dataset
+from experiments.mnist.plots.neuron_plot import create_spike_count_map
+from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
 from bats.Losses import *
-from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
 # Dataset
-DATASET_PATH = Path("../../datasets/mnist.npz")
+DATASET_PATH = Path("../../../datasets/mnist.npz")
 
 N_INPUTS = 28 * 28
-SIMULATION_TIME = 0.2
+SIMULATION_TIME = 1.0
 
 # Hidden layer
 N_NEURONS_1 = 800
 TAU_S_1 = 0.130
-THRESHOLD_HAT_1 = 0.2
+THRESHOLD_HAT_1 = 0.7
 DELTA_THRESHOLD_1 = 1 * THRESHOLD_HAT_1
-SPIKE_BUFFER_SIZE_1 = 30
+SPIKE_BUFFER_SIZE_1 = 1
 
 # Output_layer
 N_OUTPUTS = 10
 TAU_S_OUTPUT = 0.130
-THRESHOLD_HAT_OUTPUT = 1.3
+THRESHOLD_HAT_OUTPUT = 2.0
 DELTA_THRESHOLD_OUTPUT = 1 * THRESHOLD_HAT_OUTPUT
-SPIKE_BUFFER_SIZE_OUTPUT = 30
+SPIKE_BUFFER_SIZE_OUTPUT = 1
 
 # Training parameters
-N_TRAINING_EPOCHS = 50
+N_TRAINING_EPOCHS = 30
 N_TRAIN_SAMPLES = 60000
 N_TEST_SAMPLES = 10000
 TRAIN_BATCH_SIZE = 50
@@ -47,22 +46,24 @@ TRAIN_PRINT_PERIOD = 0.1
 TRAIN_PRINT_PERIOD_STEP = int(N_TRAIN_SAMPLES * TRAIN_PRINT_PERIOD / TRAIN_BATCH_SIZE)
 TEST_PERIOD = 1.0  # Evaluate on test batch every TEST_PERIOD epochs
 TEST_PERIOD_STEP = int(N_TRAIN_SAMPLES * TEST_PERIOD / TRAIN_BATCH_SIZE)
-LEARNING_RATE = 0.003
+LEARNING_RATE = 0.002
 LR_DECAY_EPOCH = 10  # Perform decay very n epochs
 LR_DECAY_FACTOR = 1.0
 MIN_LEARNING_RATE = 0
-TARGET_FALSE = 3
-TARGET_TRUE = 15
-DECAY_RATE = 1
+TAU_LOSS = 0.005
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_weighedMSE/best_model")
+EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs_single_spike/output_metrics")
+SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs_single_spike/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
-    return cp.random.uniform(-1.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
+    return cp.random.uniform(0.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
+
+
+def weight_initializer_out(n_post: int, n_pre: int) -> cp.ndarray:
+    return cp.random.uniform(0.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
 
 
 if __name__ == "__main__":
@@ -96,17 +97,17 @@ if __name__ == "__main__":
     output_layer = LIFLayer(previous_layer=hidden_layer, n_neurons=N_OUTPUTS, tau_s=TAU_S_OUTPUT,
                             theta=THRESHOLD_HAT_OUTPUT,
                             delta_theta=DELTA_THRESHOLD_OUTPUT,
-                            weight_initializer=weight_initializer,
+                            weight_initializer=weight_initializer_out,
                             max_n_spike=SPIKE_BUFFER_SIZE_OUTPUT,
                             name="Output layer")
     network.add_layer(output_layer)
 
-    loss_fct = SpikeTimeWeighedMSE(target_false=TARGET_FALSE, target_true=TARGET_TRUE, decay_rate=DECAY_RATE)
+    loss_fct = TTFSSoftmaxCrossEntropy(tau=TAU_LOSS)
     optimizer = AdamOptimizer(learning_rate=LEARNING_RATE)
 
     # Metrics
     training_steps = 0
-    train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_train")
+    train_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_train", decimal=4)
     train_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_train")
     train_silent_label_monitor = SilentLabelsMonitor()
     train_time_monitor = TimeMonitor()
@@ -116,12 +117,13 @@ if __name__ == "__main__":
                                               train_time_monitor],
                                              print_prefix="Train | ")
 
-    test_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_test")
+    test_loss_monitor = LossMonitor(export_path=EXPORT_DIR / "loss_test", decimal=4)
     test_accuracy_monitor = AccuracyMonitor(export_path=EXPORT_DIR / "accuracy_test")
     test_learning_rate_monitor = ValueMonitor(name="Learning rate", decimal=5)
     # Only monitor LIF layers
     test_spike_counts_monitors = {l: SpikeCountMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
-    test_silent_monitors = {l: SilentNeuronsMonitor(l.name) for l in network.layers if isinstance(l, LIFLayer)}
+    test_silent_monitors = {l: SilentNeuronsMonitor(l.name, export_path=EXPORT_DIR / ("silent_neurons_" + l.name))
+                          for l in network.layers if isinstance(l, LIFLayer)}
     test_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
                           for l in network.layers if isinstance(l, LIFLayer)}
     test_time_monitor = TimeMonitor()
@@ -133,7 +135,11 @@ if __name__ == "__main__":
     test_monitors_manager = MonitorsManager(all_test_monitors,
                                             print_prefix="Test | ")
 
+    # Initialize a dictionary to hold spike count data
+    spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
+
     best_acc = 0.0
+
     print("Training...")
     for epoch in range(N_TRAINING_EPOCHS):
         train_time_monitor.start()
@@ -152,6 +158,13 @@ if __name__ == "__main__":
             network.forward(spikes, n_spikes, max_simulation=SIMULATION_TIME, training=True)
             out_spikes, n_out_spikes = network.output_spike_trains
 
+
+            # Get the spike count from the hidden layer
+            hidden_layer_spike_count = hidden_layer.spike_trains[1].get()
+
+            # Store the spike count data
+            for i, label in enumerate(labels):
+              spike_counts[label].append(hidden_layer_spike_count[i])
             # Predictions, loss and errors
             pred = loss_fct.predict(out_spikes, n_out_spikes)
             loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
@@ -167,7 +180,7 @@ if __name__ == "__main__":
 
             # Compute gradient
             gradient = network.backward(errors)
-            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g, layer in zip(gradient, network.layers)]
+            avg_gradient = [None if g is None else cp.mean(g, axis=0) for g in gradient]
             del gradient
 
             # Apply step
@@ -176,6 +189,7 @@ if __name__ == "__main__":
 
             network.apply_deltas(deltas)
             del deltas
+      
 
             training_steps += 1
             epoch_metrics = training_steps * TRAIN_BATCH_SIZE / N_TRAIN_SAMPLES
@@ -226,5 +240,9 @@ if __name__ == "__main__":
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
-                    image = get_image(0)
-                    plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)
+        # Calculate average spike counts
+        avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+
+        # Create a figure to visualize network activity and sparsity
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_SINGLE_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs_single_spike', '/content/SNN-CAPSTONE/')
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_SINGLE_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs_single_spike', '/content/SNN-CAPSTONE/')
