@@ -258,7 +258,7 @@ epochs = 2
 simulation_time = 0.2
 decay_rate = 1
 
-path = "results/train_decay_rate/Best_params"
+path = "SNN-CAPSTONE/results/train_decay_rate/Best_params"
 root_path = '/kaggle/working/'
 
 print(f'\nDecay rate {decay_rate}\n')
