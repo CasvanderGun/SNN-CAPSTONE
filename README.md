@@ -33,7 +33,7 @@ Python packages:
 
 ## 3. Experiments
 
-There are six experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results can be saved.
+There are six experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results can be saved. The dataset should aleady be downloaded and the directories should already exist, but this is just to make sure.
 
 ### Downloading the dataset
 
@@ -111,7 +111,7 @@ $ python3 train_ttfs_eval_ttfs.py
 ```
 
 #### Experiment 4: multi-spike count loss (evaluated on ttfs loss)
-This experiment is used to cross validate the time-to-first-spike loss function with the spike-count loss function.
+This experiment is used to cross validate the multi-spike spike-count loss function with the time-to-first-spike loss function.
 
 
 ```console
@@ -122,7 +122,7 @@ $ python3 train_count_eval_ttfs.py
 
 
 #### Experiment 5: multi-spike ttfs loss (evaluated on count loss)
-This experiment is used to cross validate the spike-count loss function with the time-to-first-spike loss function.
+This experiment is used to cross validate the multi-spike time-to-first-spike loss function with the spike-count loss function.
 
 
 ```console

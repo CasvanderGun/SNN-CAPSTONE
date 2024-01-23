@@ -289,4 +289,4 @@ def train_ttfs(epochs, export_path, root_path):
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
 
-train_ttfs(30, 'SNN-CAPSTONE/results/train_ttfs_eval_ttfs', "kaggle/working/")
+train_ttfs(30, 'SNN-CAPSTONE/results/train_ttfs_eval_ttfs', "/kaggle/working/")
