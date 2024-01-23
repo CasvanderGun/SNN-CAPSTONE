@@ -33,7 +33,7 @@ Python packages:
 
 ## 3. Experiments
 
-There are six experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results can be saved.
+There are six experiments available in our repository. These are the experiments we ran to obtain the results used for our project. First an explanation is given on how the dataset can be downloaded and the results can be saved. The dataset should aleady be downloaded and the directories should already exist, but this is just to make sure.
 
 ### Downloading the dataset
 
