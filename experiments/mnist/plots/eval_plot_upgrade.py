@@ -9,7 +9,7 @@ import os
 # Specify the path to the directory
 directory_count_ttfs = Path(r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_count_eval_ttfs\train_multiple_runsv2')
 directory_ttfs_count = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_count\multiple_runs")
-# data_directory_decay = Path(r"")
+data_directory_decay = Path(r"")
 num_runs = 5
 
 def load_files(dic_path):
@@ -86,7 +86,7 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         plt.figure(figsize=(16.4, 6))
     else:
         plt.figure(figsize=(12, 6))
-        
+
     for df, label in zip(df_list, labels):
         sns.lineplot(x=x_name, y=y_name, data=df, errorbar=r, label=label)
         plt.fill_between(df[x_name], df[y_name] - df[r], df[y_name] + df[r], 
@@ -104,7 +104,6 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         plt.legend(bbox_to_anchor=(1.02, 0.5), loc="center left", borderaxespad=0)
     else:
         plt.legend(loc=loc)
-
     plt.title(full_title)
     plt.xlabel('Epoch')
     plt.ylabel(ylabel=ylabel)
@@ -142,11 +141,13 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
 
 data_dict_count_e_ttfs = make_data_dict(directory_count_ttfs)
 data_dict_ttfs_e_count = make_data_dict(directory_ttfs_count, num_runs=4)
+data_dict_decay = make_data_dict(directory_decay)
 
 metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                       'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_ttfs = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                      'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
+metric_names_decay = []
 
 
 # Load and store data train count eval TTFS
@@ -168,6 +169,16 @@ stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name,
 
 loc, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc(stats_dataframes_ttfs_e_count['accuracy_ttfs_test'])
 print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}% at epoch {loc}.")
+
+# Load and store data decay
+metric_data_dict_decay = {metric_name: extract_metric_data(data_dict_decay, metric_name) 
+                                 for metric_name in metric_names_decay}
+dataframes_decay = {metric_name: create_dataframes(metric_data, metric_name) 
+                           for metric_name, metric_data in metric_data_dict_decay.items()}
+stats_dataframes_decay = {metric_name: extract_stats(df) for metric_name, df in dataframes_decay.items()}
+
+loc, best_test_acc_decay, sd_test_acc_decay = get_best_acc(stats_dataframes_decay[''])
+print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}% at epoch {loc}.")
 
 
 #######################################################################################################################################
