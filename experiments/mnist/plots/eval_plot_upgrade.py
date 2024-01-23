@@ -77,8 +77,8 @@ def create_line_plot(df, x_name: str='Epoch', y_name: str='mean', r='sd', title:
 
 def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: str, r='sd', title: str | None = None, 
                               ylabel: str | None = None, labels: list[str] = None, set_limit:  bool = False, 
-                              blimit: float = 0.0, tlimit: float = 100, style: str = "whitegrid", loc="lower right",
-                              eval_df: pd.DataFrame | None = None, path: str = "") -> None:
+                              blimit: float = 0.0, tlimit: float = 100, loc="lower right", legend_outside_grid: bool=False,
+                              style: str = "whitegrid", eval_df: pd.DataFrame | None = None, path: str = "") -> None:
     """ Function to plot multiple lines in a graph. The input must be a list containing the pd.DataFrames you want to make a graph of.
     Use the x_name and y_name to specify the columns in the dataframe to get the data you want to use in the plot."""
     sns.set(style=style)
@@ -95,6 +95,13 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         full_title = title + ' with confidence intervals over runs\n' + f"Best test accuracy: {max_accuracy:.2f}% with \u00B1{std:.3f}% at epoch {max_epoch['Epoch']:.0f}"
     else:
         full_title = title + ' with confidence intervals over runs'
+    
+    if legend_outside_grid:
+        plt.subplots_adjust(right=0.7)
+        plt.legend(bbox_to_anchor=(1.02, 0.5), loc="center left", borderaxespad=0)
+    else:
+        plt.legend(loc=loc)
+
     plt.title(full_title)
     plt.xlabel('Epoch')
     plt.ylabel(ylabel=ylabel)
@@ -102,7 +109,6 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         plt.ylim(bottom=blimit, top=tlimit)
     if path != "":
         plt.savefig(path + "/" + title)
-    plt.legend(loc=loc)
     plt.show()
 
 def get_best_acc(df: pd.DataFrame, col_name1: str='mean', col_name2: str='sd') -> tuple[float, float]:
@@ -118,7 +124,6 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
     - include_cross_eval: True or False. Do you want to include the cross validation data in the result.
     - not_include: to specify when you do not want to include cross validation data. Put the loss function (count, ttfs, etc.)
     in the order you do not want to include. """
-
     result = []
     num = 0
     for d in dfs:
@@ -170,7 +175,7 @@ print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.
 save_path = "/Users/hanna/Downloads/plots"
 
 # Accuracy plots
-execute_acc = False  # Want to show accurary plot
+execute_acc = True  # Want to show accurary plot
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], 
                                "accuracy", include_cross_eval=True)
@@ -181,9 +186,9 @@ if execute_acc:
     accuracy_labels_zoom = ['train count', 'test count', 'train ttfs', 'test ttfs']
 
     create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="All Accuracy", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_all, set_limit=False)
+                              labels=accuracy_labels_all, set_limit=False, path=save_path, legend_outside_grid=True)
     create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_zoom, set_limit=True, blimit=95)
+                              labels=accuracy_labels_zoom, set_limit=True, blimit=95, path=save_path)
     
 # Loss plots
 execute_loss = False  # Want to show loss plot
@@ -198,9 +203,9 @@ if execute_loss:
     loss_labels_zoom_ttfs = ['train', 'test']
 
     create_line_plot_multiple(loss_dfs_all, 'Epoch', 'mean', title="All Loss", ylabel="loss", 
-                              labels=loss_labels_all, set_limit=False, loc='upper right')
+                              labels=loss_labels_all, set_limit=False, loc='upper right', path=save_path)
     create_line_plot_multiple(loss_dfs_zoom_count, 'Epoch', 'mean', title="Loss of count", ylabel="loss", 
-                              labels=loss_labels_zoom_count, loc='upper right')
+                              labels=loss_labels_zoom_count, loc='upper right', path=save_path)
     create_line_plot_multiple(loss_dfs_zoom_ttfs, 'Epoch', 'mean', title="Loss of TTFS", ylabel="loss", 
-                              labels=loss_labels_zoom_ttfs, loc='upper right')
+                              labels=loss_labels_zoom_ttfs, loc='upper right', path=save_path)
 
