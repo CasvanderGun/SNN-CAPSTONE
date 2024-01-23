@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
-from experiments.mnist.load_model import plot_spike_train, get_image, plot_all_spike_trains
+from experiments.mnist.load_model import plot_spike_train, get_image
 from experiments.mnist.plots.neuron_plot import create_spike_count_map
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
@@ -238,6 +238,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path):
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
+                    image = get_image(0)
+                    plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)
 
 
         # Calculate average spike counts
@@ -250,10 +252,5 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path):
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'results/train_decay_rate', '/content/SNN-CAPSTONE/')
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'results/train_decay_rate', '/content/SNN-CAPSTONE/')
 
-        image = get_image(0)
-        plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)
-        
-        plot_all_spike_trains(network, SIMULATION_TIME, 'spike train', export_path + '/spike_trains')
 
 
-train_decay_rate(2, 3, 0.2, "/content/SNN-CAPSTONE/results/train_decay_rate/Simulation_time_0.2/decay_rate_3")
