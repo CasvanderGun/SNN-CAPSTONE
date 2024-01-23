@@ -249,8 +249,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
         # Create a figure to visualize network activity and sparsity
         simulation_time_str = '{:.0e}'.format(simulation_time)
         decay_rate_str = '{:.0e}'.format(decay_rate)
-        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'SNN-CAPSTONE/results/train_decay_rate', root_path)
-        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'SNN-CAPSTONE/results/train_decay_rate', root_path)
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'results/train_decay_rate', root_path)
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', 'results/train_decay_rate', root_path)
 
 
 
@@ -258,8 +258,8 @@ epochs = 2
 simulation_time = 0.2
 decay_rate = 1
 
-path = "SNN-CAPSTONE/results/train_decay_rate/Best_params"
-root_path = '/kaggle/working/'
+path = "results/train_decay_rate/Best_params"
+root_path = '/kaggle/working/SNN-CAPSTONE/'
 
 print(f'\nDecay rate {decay_rate}\n')
 train_decay_rate(epochs, decay_rate, simulation_time, root_path + path, root_path)
