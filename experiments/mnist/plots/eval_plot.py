@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt 
 import numpy as np
+from pathlib import Path
 import seaborn as sns
 import pandas as pd
 import os
 
 # Specify the path to the directory
-directory_path = r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_multiple_runsv2\Run_'
+directory_path = r"\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_count_eval_ttfs\train_multiple_runsv2\Run_"
 num_runs = 5
 
 def loading_files(dic_path):
