@@ -31,7 +31,7 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         plt.savefig(save_path)
         print(f"Neuron Plot saved to {save_path}")
 
-def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: Path) -> None:
+def create_spike_count_map2(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: Path) -> None:
         """Creates a visual representation of the average spike counts per neuron in the hidden layer for each label and stores a png in the results folder
         args:
         - avg_spike_counts: input data, stored as a dict

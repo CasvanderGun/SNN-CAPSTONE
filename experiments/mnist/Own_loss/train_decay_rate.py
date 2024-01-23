@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
 from experiments.mnist.load_model import plot_spike_train, get_image
-from experiments.mnist.plots.neuron_plot import create_spike_count_map
+from experiments.mnist.plots.neuron_plot import create_spike_count_map2
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
@@ -251,8 +251,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
         # Create a figure to visualize network activity and sparsity
         simulation_time_str = '{:.0e}'.format(simulation_time)
         decay_rate_str = '{:.0e}'.format(decay_rate)
-        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
-        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
+        create_spike_count_map2(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
+        create_spike_count_map2(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
 
 
 '''
