@@ -111,7 +111,7 @@ $ python3 train_ttfs_eval_ttfs.py
 ```
 
 #### Experiment 4: multi-spike count loss (evaluated on ttfs loss)
-This experiment is used to cross validate the time-to-first-spike loss function with the spike-count loss function.
+This experiment is used to cross validate the multi-spike spike-count loss function with the time-to-first-spike loss function.
 
 
 ```console
@@ -122,7 +122,7 @@ $ python3 train_count_eval_ttfs.py
 
 
 #### Experiment 5: multi-spike ttfs loss (evaluated on count loss)
-This experiment is used to cross validate the spike-count loss function with the time-to-first-spike loss function.
+This experiment is used to cross validate the multi-spike time-to-first-spike loss function with the spike-count loss function.
 
 
 ```console
