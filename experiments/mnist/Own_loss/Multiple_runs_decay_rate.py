@@ -5,14 +5,15 @@ sys.path.insert(0, "../../../")  # Add repository root to python path
 
 from experiments.mnist.Own_loss.train_decay_rate import train_decay_rate
 
-epochs = 50
+epochs = 1
 simulation_time = 0.2
 decay_rate = 1
-runs = 5
+runs = 1
 
 root_path = '/kaggle/working/SNN-CAPSTONE/'
-path = root_path + "results/train_decay_rate/multiple_runs/Run_"
+path = root_path + "results/train_decay_rate/multiple_runs"
 
+print('Total runs: ', runs)
 for run in range(runs):
     print('\nRun: ' + str(run + 1) + '\n')
     run_path = path + str(run + 1)
