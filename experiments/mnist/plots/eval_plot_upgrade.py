@@ -112,7 +112,8 @@ def get_best_acc(df: pd.DataFrame, col_name1: str='mean', col_name2: str='sd') -
     loc = df.loc[df[col_name1].idxmax()]
     return loc['Epoch'], loc[col_name1], loc[col_name2]
 
-def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, not_include: Sequence[str]="") -> list[pd.DataFrame]:
+def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, 
+                    not_include: Sequence[str]="", print_load: bool=False) -> list[pd.DataFrame]:
     """ Extracts the pandas Dataframes from the list of dictionaries. 
     - dfs: this is the list of dictionaries you are going to search in. If you only want to search in one dictionary
     make sure to put it in a list!
