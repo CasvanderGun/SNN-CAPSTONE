@@ -168,7 +168,7 @@ if __name__ == "__main__":
               spike_counts[label].append(hidden_layer_spike_count[i])
 
               # Get the spike count from the hidden layer
-            output_layer_spike_count = hidden_layer.spike_trains[2].get()
+            output_layer_spike_count = output_layer.spike_trains[1].get()
 
             # Store the spike count data
             for i, label in enumerate(labels):
