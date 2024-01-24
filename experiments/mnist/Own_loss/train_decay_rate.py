@@ -128,8 +128,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
     test_norm_monitors = {l: WeightsNormMonitor(l.name, export_path=EXPORT_DIR / ("weight_norm_" + l.name))
                         for l in network.layers if isinstance(l, LIFLayer)}
     test_time_monitor = TimeMonitor()
-    all_test_monitors = [test_loss_monitor, test_accuracy_monitor, test_learning_rate_monitor]
-    all_test_monitors.extend(test_spike_counts_monitors.values())
+    all_test_monitors = [test_loss_monitor, test_accuracy_monitor, test_learning_rate_monitor, test_spike_counts_monitors]
+    #all_test_monitors.extend(test_spike_counts_monitors.values())
     all_test_monitors.extend(test_silent_monitors.values())
     all_test_monitors.extend(test_norm_monitors.values())
     all_test_monitors.append(test_time_monitor)
@@ -255,14 +255,13 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
         create_spike_count_map2(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
 
 
-'''
+
 epochs = 2
 simulation_time = 0.2
 decay_rate = 1
 
 path = "results/train_decay_rate/Best_params"
-root_path = '/kaggle/working/SNN-CAPSTONE/'
+root_path = '/content/SNN-CAPSTONE/'
 
 print(f'\nDecay rate {decay_rate}\n')
 train_decay_rate(epochs, decay_rate, simulation_time, root_path + path, root_path)
-'''
