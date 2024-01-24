@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 import sys
 
-sys.path.insert(0, "../../../")  # Add repository root to python path
+sys.path.insert(0, "../../")  # Add repository root to python path
 
 from experiments.mnist.Dataset import Dataset
 from bats.Layers import InputLayer, LIFLayer
@@ -67,7 +67,7 @@ def load_model(model_path):
 
 def get_image(index):
     # Dataset
-    DATASET_PATH = Path("../../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -90,7 +90,7 @@ def show_image(index, path, title = ''):
 
 def get_spike_train(image, model, sim_time):
     # Dataset
-    DATASET_PATH = Path("../../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
