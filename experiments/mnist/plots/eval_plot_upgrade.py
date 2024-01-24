@@ -80,7 +80,8 @@ def create_line_plot(df, x_name: str='Epoch', y_name: str='mean', r='sd', title:
 def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: str, r: str='sd', title: str | None = None, 
                               ylabel: str | None = None, labels: list[str] = None, set_limit:  bool=False, 
                               blimit: float=0.0, tlimit: float=100, loc="lower right", rlimit: str | None=None,
-                              legend_outside_grid: bool=False, style: str="whitegrid", path: str="") -> None:
+                              legend_outside_grid: bool=False, style: str="whitegrid", path: str="", 
+                              colors: list[str] | None = None) -> None:
     """ Function to plot multiple lines in a graph. The input must be a list containing the pd.DataFrames you want to make a graph of.
     Use the x_name and y_name to specify the columns in the dataframe to get the data you want to use in the plot."""
     sns.set(style=style)
@@ -89,10 +90,10 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
     else:
         plt.figure(figsize=(12, 6))
 
-    for df, label in zip(df_list, labels):
-        sns.lineplot(x=x_name, y=y_name, data=df, errorbar=r, label=label)
+    for df, label, color in zip(df_list, labels, colors):
+        sns.lineplot(x=x_name, y=y_name, data=df, errorbar=r, label=label, color=color)
         plt.fill_between(df[x_name], df[y_name] - df[r], df[y_name] + df[r], 
-                         alpha=0.4)
+                         alpha=0.4, color=color)
         
     if legend_outside_grid:
         plt.subplots_adjust(right=0.7)
@@ -131,19 +132,21 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
     - metric_name: specify to filter for a specific metric, e.g. 'accuracy' or 'loss' etc.
     - include_cross_eval: True or False. Do you want to include the cross validation data in the result.
     - not_include: to specify when you do not want to include cross validation data. Put the loss function (count, ttfs, etc.)
-    in the order you do not want to include. """
+    in the order you do not want to include."""
     result = []
     num = 0
     for d in dfs:
         for key in d:
-            if include_cross_eval and metric_name in key:
-                result.append(d[key])
-                if print_load:
-                    print(f"{key} data added to list")
-            elif metric_name in key and not_include[num] not in key:
-                result.append(d[key])
-                if print_load:
-                    print(f"{ key} data added to list")
+            if include_cross_eval:
+                if metric_name in key and 'train' not in key:
+                    result.append(d[key])
+                    if print_load:
+                        print(f"{key} data added to list")
+            else:
+                if metric_name in key and not_include[num] not in key and 'train' not in key:
+                    result.append(d[key])
+                    if print_load:
+                        print(f"{ key} data added to list")
         num += 1
     return result
 
@@ -218,10 +221,19 @@ print(f"The best accuracy of TTFS with single spike is: {best_test_acc_ttfs_sing
 # save path
 save_path = "/Users/hanna/Downloads/plots"
 
+######################################################################
+#########                     COLOR THEME                    #########
+######################################################################
+cTTFS = 'royalblue'
+cCOUNT = 'firebrick'
+cCT = 'rebeccapurple'
+cTC = 'olivedrab'
+cDECAY = 'green'
+
 ##########################################################################
 #########                     ACCURACY PLOTS                     #########
 ##########################################################################
-execute_acc = False  # Want to show accurary plot
+execute_acc = True  # Want to show accurary plot
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], "accuracy")
     accuracy_df_decay = get_dfs_to_list([stats_dataframes_decay], 'accuracy')
@@ -229,22 +241,23 @@ if execute_acc:
                                 "accuracy", include_cross_eval=False, not_include=('ttfs', 'count', 'ipsum'))
     accuracy_reproduce = [stats_dataframes_count_e_ttfs['accuracy_count_test'], stats_dataframes_ttfs_single['accuracy_test']]
     accuracy_ttfs_multi = [stats_dataframes_ttfs_e_count['accuracy_ttfs_test']]
-    accuracy_labels_all = ['train count', 'train count test count', "train count test TTFS", 
-                           'train TTFS', 'train TTFS test count', "train TTFS test TTFS"]
+    accuracy_labels_all = ['train count test count', "train count test TTFS", 
+                           'train TTFS test count', "train TTFS test TTFS"]
     accuracy_labels_decay = ['test decay', 'train decay']
     accuracy_labels_reproduce = ['test count', 'test TTFS single spike']
     accuracy_labels_zoom = ['train count', 'test count', 'train ttfs', 'test ttfs', 'test decay', 'train decay']
 
-    create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="All Accuracy", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_all, path=save_path, legend_outside_grid=True)
+    create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="Test accuracies count, TTFS and cross-evaluation", 
+                              ylabel="accuracy (%)", labels=accuracy_labels_all, colors=[cCOUNT, cCT, cTC, cTTFS], 
+                              path=save_path, legend_outside_grid=True)
     create_line_plot_multiple(accuracy_df_decay, 'Epoch', 'mean', title="Accuracy of decay loss function", ylabel="accuracy (%)", 
                               labels=accuracy_labels_decay, set_limit=True, blimit=95, path=save_path)
-    create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
+    create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Zoom of accuracy count and TTFS", ylabel="accuracy (%)", 
                               labels=accuracy_labels_zoom, set_limit=True, blimit=95, rlimit=30, path=save_path)
     create_line_plot_multiple(accuracy_reproduce, 'Epoch', 'mean', title="Accuracy reproduced from paper", ylabel="accuracy (%)", 
                               labels=accuracy_labels_reproduce, set_limit=True, blimit=80, path=save_path)
     create_line_plot_multiple(accuracy_ttfs_multi, 'Epoch', 'mean', title="Accuracy TTFS with multi spike", ylabel="accuracy (%)", 
-                              labels=['test TTFS multi spike'], set_limit=True, blimit=80, path=save_path)
+                              labels=['test TTFS multi spike'], color=cTTFS, set_limit=True, blimit=80, path=save_path)
     
 ######################################################################
 #########                     lOSS PLOTS                     #########
