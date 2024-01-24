@@ -115,10 +115,9 @@ def get_best_acc(df: pd.DataFrame, col_name1: str='mean', col_name2: str='sd') -
 def get_best_acc_all(df: pd.DataFrame) -> tuple[float, float]:
     """ Function to get the best accuracy in the given pandas dataframe over all the epochs 
     and calculate the mean and standard deviation"""
-    loc = pd.DataFrame(df.transpose().max(), columns=['Highest Accuracy'])
-    mean = loc.mean()
-    std = loc.std()
-    return loc, mean, std
+    df_numeric = df.apply(pd.to_numeric, errors='coerce')
+    loc = pd.DataFrame(df_numeric.transpose().max(), columns=['Highest Accuracy'])
+    return loc, loc.mean(), loc.std()
 
 def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, 
                     not_include: Sequence[str]="", print_load: bool=False) -> list[pd.DataFrame]:
