@@ -112,8 +112,7 @@ def get_best_acc(df: pd.DataFrame, col_name1: str='mean', col_name2: str='sd') -
     loc = df.loc[df[col_name1].idxmax()]
     return loc['Epoch'], loc[col_name1], loc[col_name2]
 
-def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, 
-                    not_include: Sequence[str]="", print_load: bool=False) -> list[pd.DataFrame]:
+def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, not_include: Sequence[str]="") -> list[pd.DataFrame]:
     """ Extracts the pandas Dataframes from the list of dictionaries. 
     - dfs: this is the list of dictionaries you are going to search in. If you only want to search in one dictionary
     make sure to put it in a list!
@@ -154,8 +153,8 @@ dataframes_count_e_ttfs = {metric_name: create_dataframes(metric_data, metric_na
                            for metric_name, metric_data in metric_data_dict_count_e_ttfs.items()}
 stats_dataframes_count_e_ttfs = {metric_name: extract_stats(df) for metric_name, df in dataframes_count_e_ttfs.items()}
 
-loc_count, best_test_acc_count, sd_test_acc_count = get_best_acc(stats_dataframes_count_e_ttfs['accuracy_count_test'])
-print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% with \u00B1{sd_test_acc_count:.3f}% at epoch {loc_count}.")
+loc, best_test_acc_count, sd_test_acc_count = get_best_acc(stats_dataframes_count_e_ttfs['accuracy_count_test'])
+print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% With \u00B1{sd_test_acc_count:.3f}% at epoch {loc}.")
 
 # Load and store data train TTFS eval count
 metric_data_dict_ttfs_e_count = {metric_name: extract_metric_data(data_dict_ttfs_e_count, metric_name) 
@@ -164,8 +163,8 @@ dataframes_ttfs_e_count = {metric_name: create_dataframes(metric_data, metric_na
                            for metric_name, metric_data in metric_data_dict_ttfs_e_count.items()}
 stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_e_count.items()}
 
-loc_ttfs, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc(stats_dataframes_ttfs_e_count['accuracy_ttfs_test'])
-print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% with \u00B1{sd_test_acc_ttfs:.3f}% at epoch {loc_ttfs}.")
+loc, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc(stats_dataframes_ttfs_e_count['accuracy_ttfs_test'])
+print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}% at epoch {loc}.")
 
 # Load and store data decay loss
 metric_data_dict_decay = {metric_name: extract_metric_data(data_dict_decay, metric_name) 
@@ -174,8 +173,8 @@ dataframes_decay = {metric_name: create_dataframes(metric_data, metric_name)
                            for metric_name, metric_data in metric_data_dict_decay.items()}
 stats_dataframes_decay = {metric_name: extract_stats(df) for metric_name, df in dataframes_decay.items()}
 
-loc_decay, best_test_acc_decay, sd_test_acc_decay = get_best_acc(stats_dataframes_decay['accuracy_test'])
-print(f"The best accuracy of own implemented loss is: {best_test_acc_decay:.2f}% with \u00B1{sd_test_acc_decay:.3f}% at epoch {loc_decay}.")
+loc, best_test_acc_decay, sd_test_acc_decay = get_best_acc(stats_dataframes_decay[''])
+print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}% at epoch {loc}.")
 
 
 #######################################################################################################################################
