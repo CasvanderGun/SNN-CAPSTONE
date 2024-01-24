@@ -195,7 +195,7 @@ metric_data_dict_ttfs_multi = {metric_name: extract_metric_data(data_dict_ttfs_m
                                  for metric_name in metric_names_simple}
 dataframes_ttfs_multi = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_multi.items()}
-stats_dataframes_multi = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_multi.items()}
+stats_dataframes_ttfs_multi = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_multi.items()}
 
 best_test_acc_ttfs_multi, sd_test_acc_ttfs_multi = get_best_acc_all(dataframes_ttfs_multi['accuracy_test'])
 print(f"The best accuracy of TTFS with multi spike is: {best_test_acc_ttfs_multi:.2f}% with \u00B1{sd_test_acc_ttfs_multi:.3f}%")
@@ -205,7 +205,7 @@ metric_data_dict_ttfs_single = {metric_name: extract_metric_data(data_dict_ttfs_
                                  for metric_name in metric_names_simple}
 dataframes_ttfs_single = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_single.items()}
-stats_dataframes_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
+stats_dataframes_ttfs_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
 
 best_test_acc_ttfs_single, sd_test_acc_ttfs_single = get_best_acc_all(dataframes_ttfs_single['accuracy_test'])
 print(f"The best accuracy of TTFS with single spike is: {best_test_acc_ttfs_single:.2f}% with \u00B1{sd_test_acc_ttfs_single:.3f}%")
@@ -227,9 +227,12 @@ if execute_acc:
     accuracy_df_decay = get_dfs_to_list([stats_dataframes_decay], 'accuracy')
     accuracy_dfs_zoom = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count, stats_dataframes_decay], 
                                 "accuracy", include_cross_eval=False, not_include=('ttfs', 'count', 'ipsum'))
+    accuracy_reproduce = [stats_dataframes_count_e_ttfs['accuracy_count_test'], stats_dataframes_ttfs_single['accuracy_test']]
+    accuracy_ttfs_multi = [stats_dataframes_ttfs_e_count['accuracy_ttfs_test']]
     accuracy_labels_all = ['train count', 'train count test count', "train count test TTFS", 
                            'train TTFS', 'train TTFS test count', "train TTFS test TTFS"]
     accuracy_labels_decay = ['test decay', 'train decay']
+    accuracy_labels_reproduce = ['test count', 'test TTFS single spike']
     accuracy_labels_zoom = ['train count', 'test count', 'train ttfs', 'test ttfs', 'test decay', 'train decay']
 
     create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="All Accuracy", ylabel="accuracy (%)", 
@@ -238,6 +241,10 @@ if execute_acc:
                               labels=accuracy_labels_decay, set_limit=True, blimit=95, path=save_path)
     create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
                               labels=accuracy_labels_zoom, set_limit=True, blimit=95, rlimit=30, path=save_path)
+    create_line_plot_multiple(accuracy_reproduce, 'Epoch', 'mean', title="Accuracy reproduced from paper", ylabel="accuracy (%)", 
+                              labels=accuracy_labels_reproduce, set_limit=True, blimit=80, path=save_path)
+    create_line_plot_multiple(accuracy_ttfs_multi, 'Epoch', 'mean', title="Accuracy TTFS with multi spike", ylabel="accuracy (%)", 
+                              labels=['test TTFS multi spike'], set_limit=True, blimit=80, path=save_path)
     
 ######################################################################
 #########                     lOSS PLOTS                     #########
