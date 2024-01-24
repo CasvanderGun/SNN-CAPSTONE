@@ -137,6 +137,7 @@ if __name__ == "__main__":
 
     # Initialize a dictionary to hold spike count data
     spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
+    output_spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
 
     best_acc = 0.0
 
@@ -165,6 +166,14 @@ if __name__ == "__main__":
             # Store the spike count data
             for i, label in enumerate(labels):
               spike_counts[label].append(hidden_layer_spike_count[i])
+
+              # Get the spike count from the hidden layer
+            output_layer_spike_count = output_layer.spike_trains[1].get()
+
+            # Store the spike count data
+            for i, label in enumerate(labels):
+              output_spike_counts[label].append(output_layer_spike_count[i])
+
             # Predictions, loss and errors
             pred = loss_fct.predict(out_spikes, n_out_spikes)
             loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
@@ -241,8 +250,11 @@ if __name__ == "__main__":
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
         # Calculate average spike counts
+        avg_output_spike_counts = {digit: np.mean(output_spike_counts[digit], axis=0) for digit in output_spike_counts}
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
 
         # Create a figure to visualize network activity and sparsity
+        create_spike_count_map(avg_output_spike_counts, 10, 1, f'OUTPUTSpikeCountMap_10Neurons_TTFS_TTFS_SINGLE_Epoch{epoch + 1}', 'results/train_ttfs_eval_ttfs_single_spike', '/kaggle/working/SNN-CAPSTONE/')
+
         create_spike_count_map(avg_spike_counts, 800, 1, f'SpikeCountMap_800Neurons_TTFS_TTFS_SINGLE_Epoch{epoch + 1}', 'results/train_ttfs_eval_ttfs_single_spike', '/kaggle/working/SNN-CAPSTONE/')
         create_spike_count_map(avg_spike_counts, 100, 1, f'SpikeCountMap_100Neurons_TTFS_TTFS_SINGLE_Epoch{epoch + 1}', 'results/train_ttfs_eval_ttfs_single_spike', '/kaggle/working/SNN-CAPSTONE/')
