@@ -139,6 +139,9 @@ def train_ttfs(epochs, export_path, root_path):
     # Initialize a dictionary to hold spike count data
     spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
 
+    # Initialize a dictionary to hold output spike count data
+    output_spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
+
     best_acc = 0.0
 
     # Test evaluation with no training
@@ -204,6 +207,14 @@ def train_ttfs(epochs, export_path, root_path):
             # Store the spike count data
             for i, label in enumerate(labels):
               spike_counts[label].append(hidden_layer_spike_count[i])
+
+            # Get the spike count from the output layer
+            output_layer_spike_count = output_layer.spike_trains[1].get()
+
+            # Store the output spike count data
+            for i, label in enumerate(labels):
+              output_spike_counts[label].append(output_layer_spike_count[i])
+
             # Predictions, loss and errors
             pred = loss_fct.predict(out_spikes, n_out_spikes)
             loss, errors = loss_fct.compute_loss_and_errors(out_spikes, n_out_spikes, labels)
@@ -283,9 +294,13 @@ def train_ttfs(epochs, export_path, root_path):
                     plot_spike_train(image, network, SIMULATION_TIME, "spike train", SAVE_DIR)
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
+        avg_output_spike_counts = {digit: np.mean(output_spike_counts[digit], axis=0) for digit in output_spike_counts}
 
         # Create a figure to visualize network activity and sparsity
         os.makedirs(root_path + export_path + "/neuron_plots/", exist_ok=True)
+
+        create_spike_count_map(avg_output_spike_counts, 10, 15, f'OutputSpikeCountMap_10Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
+
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', export_path, root_path)
 
