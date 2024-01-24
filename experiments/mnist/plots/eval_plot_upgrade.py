@@ -117,7 +117,9 @@ def get_best_acc_all(df: pd.DataFrame) -> tuple[float, float]:
     and calculate the mean and standard deviation"""
     df_numeric = df.apply(pd.to_numeric, errors='coerce')
     loc = pd.DataFrame(df_numeric.transpose().max(), columns=['Highest Accuracy'])
-    return loc, loc.mean(), loc.std()
+    mean = loc.mean().iloc[0]
+    std = loc.std().iloc[0]
+    return loc, mean, std
 
 def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, 
                     not_include: Sequence[str]="", print_load: bool=False) -> list[pd.DataFrame]:
@@ -162,7 +164,7 @@ dataframes_count_e_ttfs = {metric_name: create_dataframes(metric_data, metric_na
 stats_dataframes_count_e_ttfs = {metric_name: extract_stats(df) for metric_name, df in dataframes_count_e_ttfs.items()}
 
 loc, best_test_acc_count, sd_test_acc_count = get_best_acc_all(dataframes_count_e_ttfs['accuracy_count_test'])
-print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% With \u00B1{sd_test_acc_count:.3f}% at epoch {loc}.")
+print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% With \u00B1{sd_test_acc_count:.3f}%")
 
 # Load and store data train TTFS eval count
 metric_data_dict_ttfs_e_count = {metric_name: extract_metric_data(data_dict_ttfs_e_count, metric_name) 
@@ -172,7 +174,7 @@ dataframes_ttfs_e_count = {metric_name: create_dataframes(metric_data, metric_na
 stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_e_count.items()}
 
 loc, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc_all(dataframes_ttfs_e_count['accuracy_ttfs_test'])
-print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}% at epoch {loc}.")
+print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}%")
 
 # Load and store data decay loss
 metric_data_dict_decay = {metric_name: extract_metric_data(data_dict_decay, metric_name) 
@@ -182,7 +184,7 @@ dataframes_decay = {metric_name: create_dataframes(metric_data, metric_name)
 stats_dataframes_decay = {metric_name: extract_stats(df) for metric_name, df in dataframes_decay.items()}
 
 loc, best_test_acc_decay, sd_test_acc_decay = get_best_acc_all(dataframes_decay['accuracy_test'])
-print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}% at epoch {loc}.")
+print(f"The best accuracy of decay trained on decay loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}%")
 
 
 #######################################################################################################################################
@@ -195,7 +197,7 @@ save_path = "/Users/hanna/Downloads/plots"
 ##########################################################################
 #########                     ACCURACY PLOTS                     #########
 ##########################################################################
-execute_acc = False  # Want to show accurary plot
+execute_acc = True  # Want to show accurary plot
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], "accuracy")
     accuracy_df_decay = get_dfs_to_list([stats_dataframes_decay], 'accuracy')
@@ -209,14 +211,14 @@ if execute_acc:
     create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="All Accuracy", ylabel="accuracy (%)", 
                               labels=accuracy_labels_all, path=save_path, legend_outside_grid=True)
     create_line_plot_multiple(accuracy_df_decay, 'Epoch', 'mean', title="Accuracy of decay loss function", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_decay, path=save_path)
+                              labels=accuracy_labels_decay, set_limit=True, blimit=95, path=save_path)
     create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
                               labels=accuracy_labels_zoom, set_limit=True, blimit=95, rlimit=30, path=save_path)
     
 ######################################################################
 #########                     lOSS PLOTS                     #########
 ######################################################################
-execute_loss = True  # Want to show loss plot
+execute_loss = False  # Want to show loss plot
 if execute_loss:
     loss_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count, stats_dataframes_decay], 
                                     "loss", include_cross_eval=True)
