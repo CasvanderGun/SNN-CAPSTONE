@@ -9,7 +9,7 @@ import os
 # Specify the path to the directory
 directory_count_ttfs = Path(r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_count_eval_ttfs\train_multiple_runsv2')
 directory_ttfs_count = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_count\multiple_runs")
-# data_directory_decay = Path(r"")
+data_directory_decay = Path(r"")
 num_runs = 5
 
 def load_files(dic_path):
@@ -77,17 +77,20 @@ def create_line_plot(df, x_name: str='Epoch', y_name: str='mean', r='sd', title:
 
 def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: str, r='sd', title: str | None = None, 
                               ylabel: str | None = None, labels: list[str] = None, set_limit:  bool = False, 
-                              blimit: float = 0.0, tlimit: float = 100, style: str = "whitegrid", loc="lower right",
-                              eval_df: pd.DataFrame | None = None, path: str = "") -> None:
+                              blimit: float = 0.0, tlimit: float = 100, loc="lower right", legend_outside_grid: bool=False,
+                              style: str = "whitegrid", eval_df: pd.DataFrame | None = None, path: str = "") -> None:
     """ Function to plot multiple lines in a graph. The input must be a list containing the pd.DataFrames you want to make a graph of.
     Use the x_name and y_name to specify the columns in the dataframe to get the data you want to use in the plot."""
     sns.set(style=style)
-    plt.figure(figsize=(12, 6))
+    if legend_outside_grid:
+        plt.figure(figsize=(16.4, 6))
+    else:
+        plt.figure(figsize=(12, 6))
 
     for df, label in zip(df_list, labels):
         sns.lineplot(x=x_name, y=y_name, data=df, errorbar=r, label=label)
         plt.fill_between(df[x_name], df[y_name] - df[r], df[y_name] + df[r], 
-                         alpha=0.4, label=f'{label} confidence interval')
+                         alpha=0.4)
     if eval_df is not None:
         max_epoch = eval_df.loc[eval_df['mean'].idxmax()]
         max_accuracy = max_epoch['mean']
@@ -95,6 +98,12 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         full_title = title + ' with confidence intervals over runs\n' + f"Best test accuracy: {max_accuracy:.2f}% with \u00B1{std:.3f}% at epoch {max_epoch['Epoch']:.0f}"
     else:
         full_title = title + ' with confidence intervals over runs'
+    
+    if legend_outside_grid:
+        plt.subplots_adjust(right=0.7)
+        plt.legend(bbox_to_anchor=(1.02, 0.5), loc="center left", borderaxespad=0)
+    else:
+        plt.legend(loc=loc)
     plt.title(full_title)
     plt.xlabel('Epoch')
     plt.ylabel(ylabel=ylabel)
@@ -102,7 +111,6 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
         plt.ylim(bottom=blimit, top=tlimit)
     if path != "":
         plt.savefig(path + "/" + title)
-    plt.legend(loc=loc)
     plt.show()
 
 def get_best_acc(df: pd.DataFrame, col_name1: str='mean', col_name2: str='sd') -> tuple[float, float]:
@@ -118,7 +126,6 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
     - include_cross_eval: True or False. Do you want to include the cross validation data in the result.
     - not_include: to specify when you do not want to include cross validation data. Put the loss function (count, ttfs, etc.)
     in the order you do not want to include. """
-
     result = []
     num = 0
     for d in dfs:
@@ -134,11 +141,13 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
 
 data_dict_count_e_ttfs = make_data_dict(directory_count_ttfs)
 data_dict_ttfs_e_count = make_data_dict(directory_ttfs_count, num_runs=4)
+data_dict_decay = make_data_dict(directory_decay)
 
 metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                       'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_ttfs = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                      'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
+metric_names_decay = []
 
 
 # Load and store data train count eval TTFS
@@ -161,16 +170,28 @@ stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name,
 loc, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc(stats_dataframes_ttfs_e_count['accuracy_ttfs_test'])
 print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}% at epoch {loc}.")
 
+# Load and store data decay
+metric_data_dict_decay = {metric_name: extract_metric_data(data_dict_decay, metric_name) 
+                                 for metric_name in metric_names_decay}
+dataframes_decay = {metric_name: create_dataframes(metric_data, metric_name) 
+                           for metric_name, metric_data in metric_data_dict_decay.items()}
+stats_dataframes_decay = {metric_name: extract_stats(df) for metric_name, df in dataframes_decay.items()}
 
-####################################################################
-#########                     PLOTTING                     #########
-####################################################################
+loc, best_test_acc_decay, sd_test_acc_decay = get_best_acc(stats_dataframes_decay[''])
+print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}% at epoch {loc}.")
+
+
+#######################################################################################################################################
+####################                                           PLOTTING                                            ####################
+#######################################################################################################################################
 
 # save path
 save_path = "/Users/hanna/Downloads/plots"
 
-# Accuracy plots
-execute_acc = False  # Want to show accurary plot
+##########################################################################
+#########                     ACCURACY PLOTS                     #########
+##########################################################################
+execute_acc = True  # Want to show accurary plot
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], 
                                "accuracy", include_cross_eval=True)
@@ -181,11 +202,13 @@ if execute_acc:
     accuracy_labels_zoom = ['train count', 'test count', 'train ttfs', 'test ttfs']
 
     create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="All Accuracy", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_all, set_limit=False)
-    create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_zoom, set_limit=True, blimit=95)
+                              labels=accuracy_labels_all, set_limit=False, path=save_path, legend_outside_grid=True)
+    # create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Accuracy good performance", ylabel="accuracy (%)", 
+    #                           labels=accuracy_labels_zoom, set_limit=True, blimit=95, path=save_path)
     
-# Loss plots
+######################################################################
+#########                     lOSS PLOTS                     #########
+######################################################################
 execute_loss = False  # Want to show loss plot
 if execute_loss:
     loss_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], 
@@ -197,10 +220,10 @@ if execute_loss:
     loss_labels_zoom_count = ['train', 'test']
     loss_labels_zoom_ttfs = ['train', 'test']
 
-    create_line_plot_multiple(loss_dfs_all, 'Epoch', 'mean', title="All Loss", ylabel="loss", 
-                              labels=loss_labels_all, set_limit=False, loc='upper right')
-    create_line_plot_multiple(loss_dfs_zoom_count, 'Epoch', 'mean', title="Loss of count", ylabel="loss", 
-                              labels=loss_labels_zoom_count, loc='upper right')
-    create_line_plot_multiple(loss_dfs_zoom_ttfs, 'Epoch', 'mean', title="Loss of TTFS", ylabel="loss", 
-                              labels=loss_labels_zoom_ttfs, loc='upper right')
+    create_line_plot_multiple(loss_dfs_all, 'Epoch', 'mean', title="All Losses", ylabel="loss", tlimit=1000,
+                              labels=loss_labels_all, set_limit=True, loc='upper right', path=save_path)
+    create_line_plot_multiple(loss_dfs_zoom_count, 'Epoch', 'mean', title="Losses of count", ylabel="loss", 
+                              labels=loss_labels_zoom_count, loc='upper right', path=save_path, set_limit=True, tlimit=30)
+    create_line_plot_multiple(loss_dfs_zoom_ttfs, 'Epoch', 'mean', title="Losses of TTFS", ylabel="loss", 
+                              labels=loss_labels_zoom_ttfs, loc='upper right', path=save_path, set_limit=True, tlimit=1)
 
