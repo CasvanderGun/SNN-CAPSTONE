@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 
 import sys
 
-sys.path.insert(0, "../../../")  # Add repository root to python path
+sys.path.insert(0, "../../")  # Add repository root to python path
 
 from experiments.mnist.Dataset import Dataset
 from bats.Layers import InputLayer, LIFLayer
 from bats.Network import Network
 
-# These were the settings of a train_decy_rate 
+# These were the settings of a train_decay_rate, also works with count as it was copied from there
 def load_model(model_path):
     N_INPUTS = 28 * 28
 
@@ -67,7 +67,7 @@ def load_model(model_path):
 
 def get_image(index):
     # Dataset
-    DATASET_PATH = Path("../../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -90,7 +90,7 @@ def show_image(index, path, title = ''):
 
 def get_spike_train(image, model, sim_time):
     # Dataset
-    DATASET_PATH = Path("../../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -125,3 +125,10 @@ def plot_all_spike_trains(model, sim_time, title, save_folder):
     for i in indices:
         image = get_image(i)
         plot_spike_train(image, model, sim_time, title + f'_{i}', save_folder)
+
+model_path = '/content/SNN-CAPSTONE/results/train_count_eval_ttfs/train_multiple_runsv2/Run_1/best_model'
+save_path = model_path
+
+image = get_image(0)
+model = load_model(model_path)
+plot_spike_train(image, model, 0.2, 'spike train', save_path)
