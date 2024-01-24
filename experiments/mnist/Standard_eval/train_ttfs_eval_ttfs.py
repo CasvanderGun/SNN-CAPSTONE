@@ -137,6 +137,7 @@ if __name__ == "__main__":
 
     # Initialize a dictionary to hold spike count data
     spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
+    output_spike_counts = {i: [] for i in range(10)}  # 10 digits in MNIST
 
     best_acc = 0.0
 
