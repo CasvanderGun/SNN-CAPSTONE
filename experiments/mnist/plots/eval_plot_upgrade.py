@@ -10,6 +10,8 @@ import os
 directory_count_ttfs = Path(r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_count_eval_ttfs\train_multiple_runsv2')
 directory_ttfs_count = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_count\multiple_runs")
 directory_decay = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_decay_rate\multiple_runs")
+directory_ttfs_multi = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_ttfs")
+directory_ttfs_single = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_ttfs_single_spike")
 num_runs = 5
 
 def load_files(dic_path):
@@ -119,7 +121,7 @@ def get_best_acc_all(df: pd.DataFrame) -> tuple[float, float]:
     loc = pd.DataFrame(df_numeric.transpose().max(), columns=['Highest Accuracy'])
     mean = loc.mean().iloc[0]
     std = loc.std().iloc[0]
-    return loc, mean, std
+    return mean, std
 
 def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, include_cross_eval: bool=True, 
                     not_include: Sequence[str]="", print_load: bool=False) -> list[pd.DataFrame]:
@@ -148,12 +150,14 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
 data_dict_count_e_ttfs = make_data_dict(directory_count_ttfs)
 data_dict_ttfs_e_count = make_data_dict(directory_ttfs_count)
 data_dict_decay = make_data_dict(directory_decay)
+data_dict_ttfs_multi = make_data_dict(directory_ttfs_multi, num_runs=1)
+data_dict_ttfs_single = make_data_dict(directory_ttfs_single, num_runs=1)
 
 metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                       'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_ttfs = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                      'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
-metric_names_decay = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'weight_norm_Hidden', 'weight_norm_Output']
+metric_names_simple = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'weight_norm_Hidden', 'weight_norm_Output']
 
 
 # Load and store data train count eval TTFS
@@ -163,8 +167,8 @@ dataframes_count_e_ttfs = {metric_name: create_dataframes(metric_data, metric_na
                            for metric_name, metric_data in metric_data_dict_count_e_ttfs.items()}
 stats_dataframes_count_e_ttfs = {metric_name: extract_stats(df) for metric_name, df in dataframes_count_e_ttfs.items()}
 
-loc, best_test_acc_count, sd_test_acc_count = get_best_acc_all(dataframes_count_e_ttfs['accuracy_count_test'])
-print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% With \u00B1{sd_test_acc_count:.3f}%")
+best_test_acc_count, sd_test_acc_count = get_best_acc_all(dataframes_count_e_ttfs['accuracy_count_test'])
+print(f"The best accuracy of count trained on count loss is: {best_test_acc_count:.2f}% with \u00B1{sd_test_acc_count:.3f}%")
 
 # Load and store data train TTFS eval count
 metric_data_dict_ttfs_e_count = {metric_name: extract_metric_data(data_dict_ttfs_e_count, metric_name) 
@@ -173,18 +177,38 @@ dataframes_ttfs_e_count = {metric_name: create_dataframes(metric_data, metric_na
                            for metric_name, metric_data in metric_data_dict_ttfs_e_count.items()}
 stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_e_count.items()}
 
-loc, best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc_all(dataframes_ttfs_e_count['accuracy_ttfs_test'])
+best_test_acc_ttfs, sd_test_acc_ttfs = get_best_acc_all(dataframes_ttfs_e_count['accuracy_ttfs_test'])
 print(f"The best accuracy of TTFS trained on TTFS loss is: {best_test_acc_ttfs:.2f}% With \u00B1{sd_test_acc_ttfs:.3f}%")
 
 # Load and store data decay loss
 metric_data_dict_decay = {metric_name: extract_metric_data(data_dict_decay, metric_name) 
-                                 for metric_name in metric_names_decay}
+                                 for metric_name in metric_names_simple}
 dataframes_decay = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_decay.items()}
 stats_dataframes_decay = {metric_name: extract_stats(df) for metric_name, df in dataframes_decay.items()}
 
-loc, best_test_acc_decay, sd_test_acc_decay = get_best_acc_all(dataframes_decay['accuracy_test'])
-print(f"The best accuracy of decay trained on decay loss is: {best_test_acc_decay:.2f}% With \u00B1{sd_test_acc_decay:.3f}%")
+best_test_acc_decay, sd_test_acc_decay = get_best_acc_all(dataframes_decay['accuracy_test'])
+print(f"The best accuracy of decay trained on decay loss is: {best_test_acc_decay:.2f}% with \u00B1{sd_test_acc_decay:.3f}%")
+
+# Load and store data TTFS multi spike implementation
+metric_data_dict_ttfs_multi = {metric_name: extract_metric_data(data_dict_ttfs_multi, metric_name) 
+                                 for metric_name in metric_names_simple}
+dataframes_ttfs_multi = {metric_name: create_dataframes(metric_data, metric_name) 
+                           for metric_name, metric_data in metric_data_dict_ttfs_multi.items()}
+stats_dataframes_multi = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_multi.items()}
+
+best_test_acc_ttfs_multi, sd_test_acc_ttfs_multi = get_best_acc_all(dataframes_ttfs_multi['accuracy_test'])
+print(f"The best accuracy of TTFS with multi spike is: {best_test_acc_ttfs_multi:.2f}% with \u00B1{sd_test_acc_ttfs_multi:.3f}%")
+
+# Load and store data TTFS single spike
+metric_data_dict_ttfs_single = {metric_name: extract_metric_data(data_dict_ttfs_single, metric_name) 
+                                 for metric_name in metric_names_simple}
+dataframes_ttfs_single = {metric_name: create_dataframes(metric_data, metric_name) 
+                           for metric_name, metric_data in metric_data_dict_ttfs_single.items()}
+stats_dataframes_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
+
+best_test_acc_ttfs_single, sd_test_acc_ttfs_single = get_best_acc_all(dataframes_ttfs_single['accuracy_test'])
+print(f"The best accuracy of TTFS with single spike is: {best_test_acc_ttfs_single:.2f}% with \u00B1{sd_test_acc_ttfs_single:.3f}%")
 
 
 #######################################################################################################################################
@@ -197,7 +221,7 @@ save_path = "/Users/hanna/Downloads/plots"
 ##########################################################################
 #########                     ACCURACY PLOTS                     #########
 ##########################################################################
-execute_acc = True  # Want to show accurary plot
+execute_acc = False  # Want to show accurary plot
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], "accuracy")
     accuracy_df_decay = get_dfs_to_list([stats_dataframes_decay], 'accuracy')
