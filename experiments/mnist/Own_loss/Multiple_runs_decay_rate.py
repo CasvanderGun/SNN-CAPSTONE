@@ -11,7 +11,7 @@ decay_rate = 1
 runs = 5
 
 root_path = '/kaggle/working/SNN-CAPSTONE/'
-path = root_path + "results/train_decay_rate/multiple_runs"
+path = root_path + "results/train_decay_rate/multiple_runs/Run_"
 
 print('\nTotal runs: ', runs)
 print(f'Epochs: {epochs} \tsimulation time: {simulation_time} \tdecay rate {decay_rate}')
