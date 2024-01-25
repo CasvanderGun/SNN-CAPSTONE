@@ -29,6 +29,7 @@ Python packages:
 - CuPy (Needs to correspond to the installed version of Cuda)
 - matplotlib (To generate plots with the monitors)
 - requests (To download the dataset)
+- elasticdeform
 
 
 ## 3. Experiments
@@ -132,12 +133,12 @@ $ python3 train_ttfs_eval_count.py
 ```
 
 
-#### Experiment 6: multi-spike time-weighted loss (evaluated on time weighted loss)
+#### Experiment 6: multi-spike decay loss (evaluated on decay loss)
 This experiment is used to implement and evaluate our own time-weighted loss function.
 
 ```console
 $ cd experiments/mnist
-$ python3 train_time_weighted_eval_time_weighted.py
+$ python3 train_decay_eval_decay.py
 ...
 ```
 
