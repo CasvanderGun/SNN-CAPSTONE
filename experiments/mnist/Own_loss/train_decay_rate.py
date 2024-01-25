@@ -263,7 +263,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
 
         
 
-epochs = 1
+epochs = 30
 simulation_time = 0.2
 decay_rate = 7
 
