@@ -67,7 +67,7 @@ def load_model(model_path):
 
 def get_image(index):
     # Dataset
-    DATASET_PATH = Path("../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -90,7 +90,7 @@ def show_image(index, path, title = ''):
 
 def get_spike_train(image, model, sim_time):
     # Dataset
-    DATASET_PATH = Path("../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
