@@ -9,7 +9,7 @@ epochs = 30
 num_runs = 5
 
 root_path = "/kaggle/working"
-path = '/SNN-CAPSTONE/results/train_ttfs_eval_count/train_multiple_runs/Run_'
+path = '/SNN-CAPSTONE/results/train_ttfs_eval_count/train_multiple_runsv2/Run_'
 
 for run in range(num_runs):
     print('Run: ' + str(run + 1))
