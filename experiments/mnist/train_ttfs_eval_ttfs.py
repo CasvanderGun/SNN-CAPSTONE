@@ -4,7 +4,7 @@ import numpy as np
 
 import sys
 
-sys.path.insert(0, "../../../")  # Add repository root to python path
+sys.path.insert(0, "../../")  # Add repository root to python path
 
 from experiments.mnist.plots.neuron_plot import create_spike_count_map
 from experiments.mnist.Dataset import Dataset
@@ -15,7 +15,7 @@ from bats.Network import Network
 from bats.Optimizers import *
 
 # Dataset
-DATASET_PATH = Path("../../../datasets/mnist.npz")
+DATASET_PATH = Path("../../datasets/mnist.npz")
 
 N_INPUTS = 28 * 28
 SIMULATION_TIME = 1.0
@@ -54,8 +54,8 @@ TAU_LOSS = 0.005
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_ttfs_eval_ttfs/best_model")
+EXPORT_DIR = Path("../../results/train_ttfs_eval_ttfs/output_metrics")
+SAVE_DIR = Path("../../results/train_ttfs_eval_ttfs/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
@@ -245,6 +245,6 @@ if __name__ == "__main__":
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
 
         # Create a figure to visualize network activity and sparsity
-        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
-        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
+        #create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
+        #create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_TTFS_Epoch{epoch + 1}', 'train_ttfs_eval_ttfs', '/content/SNN-CAPSTONE/')
 
