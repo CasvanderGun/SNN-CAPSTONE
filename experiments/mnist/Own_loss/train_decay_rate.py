@@ -263,7 +263,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
 
         
 
-epochs = 30
+epochs = 1
 simulation_time = 0.2
 decay_rate = 7
 
@@ -273,5 +273,4 @@ target_false = 0.7
 path = "results/train_decay_rate/tuning/targets/Run_1"
 root_path = '/kaggle/working/SNN-CASPTONE/'
 
-print('running train_decay_rate()')
 train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path)
