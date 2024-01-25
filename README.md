@@ -29,6 +29,7 @@ Python packages:
 - CuPy (Needs to correspond to the installed version of Cuda)
 - matplotlib (To generate plots with the monitors)
 - requests (To download the dataset)
+- elasticdeform
 
 
 ## 3. Experiments
