@@ -32,6 +32,7 @@ def load_files(dic_path):
             })
     return loaded_data
 
+
 def extract_metric_data(loaded_data: Dict[str, np.ndarray], metric_name: str) -> List[Dict[str, np.ndarray]]:
     """Extract metric data from loaded_data and return a list of dictionaries."""
     metric_data = []
@@ -42,11 +43,13 @@ def extract_metric_data(loaded_data: Dict[str, np.ndarray], metric_name: str) ->
                 metric_data.append({"Run":run_key, **action})
     return metric_data
 
+
 def create_dataframes(metric_data: List[Dict[str, np.ndarray]], metric_name: str) -> pd.DataFrame:
     """Create a DataFrame from the metric_data and return it."""
     df = pd.DataFrame(metric_data)
     # df['Epoch'] = pd.to_numeric(df['epochs'].str.replace(f'Epoch_{metric_name}_', ''), errors='coerce')
     return df
+
 
 def extract_stats(df):
     melted_df = pd.melt(df, id_vars=['Run'], var_name='Epoch', value_name='Value')
@@ -76,6 +79,7 @@ def create_line_plot(df, x_name: str='Epoch', y_name: str='mean', r='sd', title:
     plt.ylabel('Average Value')
     plt.legend()
     plt.show()
+
 
 def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: str, r: str='sd', title: str | None = None, 
                               ylabel: str | None = None, labels: list[str] = None, set_limit:  bool=False, 
@@ -154,17 +158,16 @@ def get_dfs_to_list(dfs: list[dict[str, pd.DataFrame]], metric_name: str, includ
 data_dict_count_e_ttfs = make_data_dict(directory_count_ttfs)
 data_dict_ttfs_e_count = make_data_dict(directory_ttfs_count)
 data_dict_decay = make_data_dict(directory_decay)
-data_dict_ttfs_multi = make_data_dict(directory_ttfs_multi, num_runs=1)
+data_dict_ttfs_multi = make_data_dict(directory_ttfs_multi, num_runs=2)
 data_dict_ttfs_single = make_data_dict(directory_ttfs_single, num_runs=1)
 
 metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                       'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
-metric_names_ttfs = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
+metric_names_ttfs_eval = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                      'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_simple = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'weight_norm_Hidden', 'weight_norm_Output']
-metric_names_ttfs_single = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'silent_neurons_Hidden',
-                            'silent_neurons_Output','weight_norm_Hidden', 'weight_norm_Output']
-
+metric_names_ttfs = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'silent_neurons_Hidden',
+                     'silent_neurons_Output','weight_norm_Hidden', 'weight_norm_Output']
 
 
 # Load and store data train count eval TTFS
@@ -179,7 +182,7 @@ print(f"The best accuracy of count trained on count loss is: {best_test_acc_coun
 
 # Load and store data train TTFS eval count
 metric_data_dict_ttfs_e_count = {metric_name: extract_metric_data(data_dict_ttfs_e_count, metric_name) 
-                                 for metric_name in metric_names_ttfs}
+                                 for metric_name in metric_names_ttfs_eval}
 dataframes_ttfs_e_count = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_e_count.items()}
 stats_dataframes_ttfs_e_count = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_e_count.items()}
@@ -199,7 +202,7 @@ print(f"The best accuracy of decay trained on decay loss is: {best_test_acc_deca
 
 # Load and store data TTFS multi spike implementation
 metric_data_dict_ttfs_multi = {metric_name: extract_metric_data(data_dict_ttfs_multi, metric_name) 
-                                 for metric_name in metric_names_simple}
+                                 for metric_name in metric_names_ttfs}
 dataframes_ttfs_multi = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_multi.items()}
 stats_dataframes_ttfs_multi = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_multi.items()}
@@ -209,10 +212,11 @@ print(f"The best accuracy of TTFS with multi spike is: {best_test_acc_ttfs_multi
 
 # Load and store data TTFS single spike
 metric_data_dict_ttfs_single = {metric_name: extract_metric_data(data_dict_ttfs_single, metric_name) 
-                                 for metric_name in metric_names_ttfs_single}
+                                 for metric_name in metric_names_ttfs}
 dataframes_ttfs_single = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_single.items()}
 stats_dataframes_ttfs_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
+
 
 best_test_acc_ttfs_single, sd_test_acc_ttfs_single = get_best_acc_all(dataframes_ttfs_single['accuracy_test'])
 print(f"The best accuracy of TTFS with single spike is: {best_test_acc_ttfs_single:.2f}% with \u00B1{sd_test_acc_ttfs_single:.3f}%")
@@ -287,9 +291,9 @@ if execute_loss:
 ################################################################################
 #########                     SILENT NEURONS PLOTS                     #########
 ################################################################################
-execute_silent = False  # Want to generate loss plot
+execute_silent = True  # Want to generate loss plot
 if execute_silent:
     silent_dfs_ttfs_single = [stats_dataframes_ttfs_single['silent_neurons_Output']]
 
-    create_line_plot_multiple(silent_dfs_ttfs_single, 'Epoch', 'mean', title="Percentage silent neurons", ylabel="%", 
-                              labels=['Output layer'], colors=['navy'], blimit=-1, path=save_path, set_limit=True)
+    create_line_plot_multiple(silent_dfs_ttfs_single, 'Epoch', 'mean', title="Percentage silent neurons of output layer", ylabel="%", 
+                              labels=['TTFS single spike'], colors=['navy'], blimit=-1, path=save_path, set_limit=True)
