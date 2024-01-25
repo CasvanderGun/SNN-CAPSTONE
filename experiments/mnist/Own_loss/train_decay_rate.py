@@ -262,7 +262,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
         create_spike_count_map2(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
 
         
-
+'''
 epochs = 30
 simulation_time = 0.2
 decay_rate = 7
@@ -275,3 +275,4 @@ root_path = '/kaggle/working/SNN-CAPSTONE/'
 
 print('Epochs = ', epochs)
 train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path)
+'''
