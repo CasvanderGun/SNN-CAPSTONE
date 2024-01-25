@@ -81,14 +81,14 @@ def create_line_plot_multiple(df_list: list[pd.DataFrame], x_name: str, y_name: 
                               ylabel: str | None = None, labels: list[str] = None, set_limit:  bool=False, 
                               blimit: float=0.0, tlimit: float=100, loc="lower right", rlimit: str | None=None,
                               legend_outside_grid: bool=False, style: str="whitegrid", path: str="", 
-                              colors: list[str] | None = None) -> None:
+                              colors: list[str] | None = None, figsize: tuple[float, float] = (12, 6)) -> None:
     """ Function to plot multiple lines in a graph. The input must be a list containing the pd.DataFrames you want to make a graph of.
     Use the x_name and y_name to specify the columns in the dataframe to get the data you want to use in the plot."""
     sns.set(style=style)
     if legend_outside_grid:
         plt.figure(figsize=(16.4, 6))
     else:
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=figsize)
 
     for df, label, color in zip(df_list, labels, colors):
         sns.lineplot(x=x_name, y=y_name, data=df, errorbar=r, label=label, color=color)
@@ -162,6 +162,9 @@ metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neuron
 metric_names_ttfs = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                      'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_simple = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'weight_norm_Hidden', 'weight_norm_Output']
+metric_names_ttfs_single = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'silent_neurons_Hidden',
+                            'silent_neurons_Output','weight_norm_Hidden', 'weight_norm_Output']
+
 
 
 # Load and store data train count eval TTFS
@@ -206,7 +209,7 @@ print(f"The best accuracy of TTFS with multi spike is: {best_test_acc_ttfs_multi
 
 # Load and store data TTFS single spike
 metric_data_dict_ttfs_single = {metric_name: extract_metric_data(data_dict_ttfs_single, metric_name) 
-                                 for metric_name in metric_names_simple}
+                                 for metric_name in metric_names_ttfs_single}
 dataframes_ttfs_single = {metric_name: create_dataframes(metric_data, metric_name) 
                            for metric_name, metric_data in metric_data_dict_ttfs_single.items()}
 stats_dataframes_ttfs_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
@@ -281,3 +284,12 @@ if execute_loss:
     create_line_plot_multiple(loss_dfs_decay, 'Epoch', 'mean', title="Loss development of decay loss function", 
                               ylabel="loss", labels=['test decay'], colors=[cDECAY], loc='upper right', path=save_path)
 
+################################################################################
+#########                     SILENT NEURONS PLOTS                     #########
+################################################################################
+execute_silent = False  # Want to generate loss plot
+if execute_silent:
+    silent_dfs_ttfs_single = [stats_dataframes_ttfs_single['silent_neurons_Output']]
+
+    create_line_plot_multiple(silent_dfs_ttfs_single, 'Epoch', 'mean', title="Percentage silent neurons", ylabel="%", 
+                              labels=['Output layer'], colors=['navy'], blimit=-1, path=save_path, set_limit=True)
