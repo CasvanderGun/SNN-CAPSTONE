@@ -67,7 +67,7 @@ def load_model(model_path):
 
 def get_image(index):
     # Dataset
-    DATASET_PATH = Path("../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -90,7 +90,7 @@ def show_image(index, path, title = ''):
 
 def get_spike_train(image, model, sim_time):
     # Dataset
-    DATASET_PATH = Path("../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
@@ -107,6 +107,7 @@ def get_spike_train(image, model, sim_time):
     return out_spikes, n_out_spikes
     
 def plot_spike_train(image, model, sim_time, title, save_path):
+    plt.figure(figsize=(8, 8))
     out_spikes, n_out_spikes = get_spike_train(image, model, sim_time)
     for label, spike_train in enumerate(out_spikes[0]):
       for spike in spike_train:
@@ -117,6 +118,8 @@ def plot_spike_train(image, model, sim_time, title, save_path):
     plt.grid(alpha=0.2, color='k', linewidth=1)
     plt.xticks(np.linspace(0, sim_time, 5))
     plt.yticks(np.arange(10))
+    plt.xlim(left=-0.005, right = 0.005+sim_time)
+    plt.ylim(top=9.5, bottom=-0.5)
     plt.savefig(str(save_path) + f'/{title}')
 
 def plot_all_spike_trains(model, sim_time, title, save_folder):
@@ -126,9 +129,11 @@ def plot_all_spike_trains(model, sim_time, title, save_folder):
         image = get_image(i)
         plot_spike_train(image, model, sim_time, title + f'_{i}', save_folder)
 
+'''
 model_path = '/content/SNN-CAPSTONE/results/train_count_eval_ttfs/train_multiple_runsv2/Run_1/best_model'
 save_path = model_path
 
 image = get_image(0)
 model = load_model(model_path)
 plot_spike_train(image, model, 0.2, 'spike train', save_path)
+'''

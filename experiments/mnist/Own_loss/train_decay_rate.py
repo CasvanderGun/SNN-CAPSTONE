@@ -16,7 +16,7 @@ from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
-def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path):
+def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, export_path, root_path):
     # Dataset
     DATASET_PATH = Path("../../../datasets/mnist.npz")
 
@@ -53,8 +53,8 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
     LR_DECAY_EPOCH = 10  # Perform decay very n epochs
     LR_DECAY_FACTOR = 1.0
     MIN_LEARNING_RATE = 0
-    TARGET_FALSE = 0.5
-    TARGET_TRUE = 7.5
+    TARGET_FALSE = target_false
+    TARGET_TRUE = target_true
     DECAY_RATE = decay_rate
 
     # Plot parameters
@@ -62,6 +62,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
     EXPORT_DIR = Path(export_path + '/output_metrics')
     SAVE_DIR = Path(export_path + '/best_model')
     NEURON_DIR = Path(export_path + '/neuron_plots')
+    SPIKETRAIN_DIR = Path(export_path + '/spike_trains')
 
     def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
         return cp.random.uniform(-1.0, 1.0, size=(n_post, n_pre), dtype=cp.float32)
@@ -78,6 +79,7 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
     if EXPORT_METRICS and not EXPORT_DIR.exists():
         EXPORT_DIR.mkdir(parents=True, exist_ok=True)
     NEURON_DIR.mkdir(parents=True, exist_ok=True)
+    SPIKETRAIN_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dataset
     print("Loading datasets...")
@@ -241,12 +243,17 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
                     image = get_image(0)
-                    plot_spike_train(image, network, SIMULATION_TIME, 'spike train', SAVE_DIR)
+                    plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch+1}', SAVE_DIR)
+
+                    
 
 
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         
+        image = get_image(0)
+        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch+1}', SPIKETRAIN_DIR)
+
         # Create a figure to visualize network activity and sparsity
         # Create a figure to visualize network activity and sparsity
         simulation_time_str = '{:.0e}'.format(simulation_time)
@@ -254,14 +261,17 @@ def train_decay_rate(epochs, decay_rate, simulation_time, export_path, root_path
         create_spike_count_map2(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
         create_spike_count_map2(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
 
+        
 
-
-epochs = 5
+epochs = 30
 simulation_time = 0.2
-decay_rate = 6
+decay_rate = 7
 
-path = "results/train_decay_rate/"
-root_path = '/kaggle/working/SNN-CAPSTONE/'
+target_true = 5
+target_false = 0.7
 
-print(f'\nDecay rate {decay_rate}\n')
-train_decay_rate(epochs, decay_rate, simulation_time, root_path + path, root_path)
+path = "results/train_decay_rate/tuning/targets/Run_1"
+root_path = '/kaggle/working/SNN-CASPTONE/'
+
+print('running train_decay_rate()')
+train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path, root_path)

@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, "../../../")  # Add repository root to python path
 
 from experiments.mnist.load_model import plot_spike_train, get_image
-from experiments.mnist.plots.neuron_plot import create_spike_count_map
+from experiments.mnist.plots.neuron_plot import create_spike_count_map, create_output_spike_count_map
 from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
@@ -37,7 +37,7 @@ SPIKE_BUFFER_SIZE_OUTPUT = 30
 
 # Training parameters
 N_TRAINING_EPOCHS = 10
-N_TRAIN_SAMPLES = 60000
+N_TRAIN_SAMPLES = 6000
 N_TEST_SAMPLES = 10000
 TRAIN_BATCH_SIZE = 50
 TEST_BATCH_SIZE = 100
@@ -59,6 +59,7 @@ TARGET_TRUE = 15
 EXPORT_METRICS = True
 EXPORT_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/output_metrics")
 SAVE_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/best_model")
+SPIKETRAIN_DIR = Path('/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/spike_trains')
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
@@ -79,6 +80,8 @@ if __name__ == "__main__":
 
     if EXPORT_METRICS and not EXPORT_DIR.exists():
         EXPORT_DIR.mkdir()
+
+    SPIKETRAIN_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dataset
     print("Loading datasets...")
@@ -274,8 +277,11 @@ if __name__ == "__main__":
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         avg_output_spike_counts = {digit: np.mean(output_spike_counts[digit], axis=0) for digit in output_spike_counts}
 
+        image = get_image(0)
+        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch + 1}', SPIKETRAIN_DIR)
+
         # Create a figure to visualize network activity and sparsity
-        create_spike_count_map(avg_output_spike_counts, 10, 15, f'OUTPUTSpikeCountMap_10Neurons_TTFS_Count_Epoch{epoch + 1}', '/results/train_ttfs_eval_count', '/kaggle/working/SNN-CAPSTONE')
+        create_output_spike_count_map(avg_output_spike_counts, 10, 15, f'OUTPUTSpikeCountMap_10Neurons_TTFS_Count_Epoch{epoch + 1}', '/results/train_ttfs_eval_count', '/kaggle/working/SNN-CAPSTONE')
         
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_Count_Epoch{epoch + 1}', '/results/train_ttfs_eval_count', '/kaggle/working/SNN-CAPSTONE')
         create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_TTFS_Count_Epoch{epoch + 1}', '/results/train_ttfs_eval_count', '/kaggle/working/SNN-CAPSTONE')

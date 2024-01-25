@@ -26,10 +26,12 @@ Libraries:
 - Cuda (Version 10.1 is the version used to develop BATS. Other versions should also work.)
   
 Python packages:
+- NumPy
 - CuPy (Needs to correspond to the installed version of Cuda)
+- SciPy
 - matplotlib (To generate plots with the monitors)
 - requests (To download the dataset)
-- elasticdeform
+- elasticdeform (Required somehow, gives an error without)
 
 
 ## 3. Experiments
