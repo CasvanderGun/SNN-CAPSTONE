@@ -61,6 +61,7 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
     EXPORT_METRICS = True
     EXPORT_DIR = Path(root_path + export_path + "/output_metrics")
     SAVE_DIR = Path(root_path + export_path + "/best_model")
+    SPIKETRAIN_DIR = Path(root_path + export_path + '/spike_trains')
 
 
     def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
@@ -79,6 +80,7 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
 
     if EXPORT_METRICS and not EXPORT_DIR.exists():
         EXPORT_DIR.mkdir()
+    SPIKETRAIN_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dataset
     print("Loading datasets...")
@@ -312,6 +314,9 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         
+        image = get_image(0)
+        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch+1}', SPIKETRAIN_DIR)
+
         # Create a figure to visualize network activity and sparsity
         os.makedirs(root_path + export_path + '/neuron_plots', exist_ok=True)
         create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_TTFS_eval_Count_Epoch{epoch + 1}', export_path, root_path)
