@@ -217,7 +217,6 @@ dataframes_ttfs_single = {metric_name: create_dataframes(metric_data, metric_nam
                            for metric_name, metric_data in metric_data_dict_ttfs_single.items()}
 stats_dataframes_ttfs_single = {metric_name: extract_stats(df) for metric_name, df in dataframes_ttfs_single.items()}
 
-
 best_test_acc_ttfs_single, sd_test_acc_ttfs_single = get_best_acc_all(dataframes_ttfs_single['accuracy_test'])
 print(f"The best accuracy of TTFS with single spike is: {best_test_acc_ttfs_single:.2f}% with \u00B1{sd_test_acc_ttfs_single:.3f}%")
 
