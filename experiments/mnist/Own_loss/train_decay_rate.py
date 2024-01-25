@@ -248,6 +248,9 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         
+        image = get_image(0)
+        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch+1}', SPIKETRAIN_DIR)
+
         # Create a figure to visualize network activity and sparsity
         # Create a figure to visualize network activity and sparsity
         simulation_time_str = '{:.0e}'.format(simulation_time)
@@ -255,19 +258,18 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
         create_spike_count_map2(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
         create_spike_count_map2(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_DecayRate{decay_rate_str}_SimulationTime{simulation_time_str}_Epoch{epoch + 1}_', NEURON_DIR)
 
-        image = get_image(0)
-        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch}', SPIKETRAIN_DIR)
+        
 
 
 
-epochs = 2
+epochs = 50
 simulation_time = 0.2
 decay_rate = 7
 
-target_true = 7
-target_false = 0.5
+target_true = 5
+target_false = 0.7
 
 path = "results/train_decay_rate/tuning/targets/"
-root_path = '/content/SNN-CAPSTONE/'
+root_path = '/kaggle/working/SNN-CASPTONE/'
 
 train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path, root_path)

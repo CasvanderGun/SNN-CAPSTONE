@@ -117,6 +117,8 @@ def plot_spike_train(image, model, sim_time, title, save_path):
     plt.grid(alpha=0.2, color='k', linewidth=1)
     plt.xticks(np.linspace(0, sim_time, 5))
     plt.yticks(np.arange(10))
+    plt.xlim(left=-0.005, right = 0.005+sim_time)
+    plt.ylim(top=9.5, bottom=-0.5)
     plt.savefig(str(save_path) + f'/{title}')
 
 def plot_all_spike_trains(model, sim_time, title, save_folder):
