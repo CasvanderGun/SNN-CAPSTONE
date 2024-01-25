@@ -273,4 +273,5 @@ target_false = 0.7
 path = "results/train_decay_rate/tuning/targets/Run_1"
 root_path = '/kaggle/working/SNN-CAPSTONE/'
 
+print('Epochs = ', epochs)
 train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path)
