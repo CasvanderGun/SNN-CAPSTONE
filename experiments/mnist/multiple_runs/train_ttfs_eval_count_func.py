@@ -161,11 +161,11 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
         pred_ttfs = loss_fct_ttfs.predict(out_spikes, n_out_spikes)
         loss_ttfs = loss_fct_ttfs.compute_loss(out_spikes, n_out_spikes, labels)
 
-        pred_ttfs_cpu = pred_ttfs.get()
-        cor_pred_ttfs = pred_ttfs_cpu[::30]
+        pred_ttfs_cpu = pred_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+        loss_ttfs_cpu = loss_ttfs.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
         loss_ttfs_cpu = loss_ttfs.get()
         test_loss_ttfs_monitor.add(loss_ttfs_cpu)
-        test_accuracy_ttfs_monitor.add(cor_pred_ttfs, labels)
+        test_accuracy_ttfs_monitor.add(pred_ttfs_cpu, labels)
 
         # count evaluation
         pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
@@ -280,8 +280,8 @@ def train_ttfs_eval_count(epochs, export_path, root_path):
                     pred_count = loss_fct_count.predict(out_spikes, n_out_spikes)
                     loss_count = loss_fct_count.compute_loss(out_spikes, n_out_spikes, labels)
 
-                    pred_count_cpu = pred_count.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
-                    loss_count_cpu = loss_count.get()[::SPIKE_BUFFER_SIZE_OUTPUT]
+                    pred_count_cpu = pred_count.get()
+                    loss_count_cpu = loss_count.get()
                     test_loss_count_monitor.add(loss_count_cpu)
                     test_accuracy_count_monitor.add(pred_count_cpu, labels)
 
