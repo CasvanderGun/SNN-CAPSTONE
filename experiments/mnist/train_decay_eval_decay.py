@@ -4,7 +4,7 @@ import numpy as np
 
 import sys
 
-sys.path.insert(0, "../../../")  # Add repository root to python path
+sys.path.insert(0, "../../")  # Add repository root to python path
 
 from experiments.mnist.load_model import plot_spike_train, get_image
 from experiments.mnist.plots.neuron_plot import create_spike_count_map2
