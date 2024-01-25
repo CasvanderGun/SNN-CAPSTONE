@@ -62,8 +62,8 @@ TAU_LOSS = 0.005
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_ttfs/output_metrics")
-SAVE_DIR = Path("/content/SNN-CAPSTONE/results/train_count_eval_ttfs/best_model")
+EXPORT_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_count_eval_ttfs/output_metrics")
+SAVE_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_count_eval_ttfs/best_model")
 SPIKETRAIN_DIR = Path('/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/spike_trains')
 
 
