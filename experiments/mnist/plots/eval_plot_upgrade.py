@@ -287,7 +287,7 @@ if execute_loss:
 ################################################################################
 #########                     SILENT NEURONS PLOTS                     #########
 ################################################################################
-execute_silent = True  # Want to generate loss plot
+execute_silent = False  # Want to generate loss plot
 if execute_silent:
     silent_dfs_ttfs_single = [stats_dataframes_ttfs_single['silent_neurons_Output']]
 
