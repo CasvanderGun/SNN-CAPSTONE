@@ -56,8 +56,8 @@ TARGET_TRUE = 15
 
 # Plot parameters
 EXPORT_METRICS = True
-EXPORT_DIR = Path("../../../results/train_count_eval_count/output_metrics")
-SAVE_DIR = Path("../../../results/train_count_eval_count/best_model")
+EXPORT_DIR = Path("../../results/train_count_eval_count/output_metrics")
+SAVE_DIR = Path("../../results/train_count_eval_count/best_model")
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
