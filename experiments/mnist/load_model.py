@@ -67,7 +67,7 @@ def load_model(model_path):
 
 def get_image(index):
     # Dataset
-    DATASET_PATH = Path("../../datasets/mnist.npz")
+    DATASET_PATH = Path("../../../datasets/mnist.npz")
 
     # Dataset
     dataset = Dataset(path=DATASET_PATH)
