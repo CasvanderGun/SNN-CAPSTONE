@@ -242,6 +242,9 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
                     network.store(SAVE_DIR)
                     print(f"Best accuracy: {np.around(best_acc, 2)}%, Networks save to: {SAVE_DIR}")
 
+                    image = get_image(0)
+                    plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch+1}', SAVE_DIR)
+
                     
 
 
@@ -260,8 +263,6 @@ def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_fa
 
         
 
-
-
 epochs = 50
 simulation_time = 0.2
 decay_rate = 7
@@ -269,7 +270,7 @@ decay_rate = 7
 target_true = 5
 target_false = 0.7
 
-path = "results/train_decay_rate/tuning/targets/"
+path = "results/train_decay_rate/tuning/targets/Run_1"
 root_path = '/kaggle/working/SNN-CASPTONE/'
 
 train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path, root_path)

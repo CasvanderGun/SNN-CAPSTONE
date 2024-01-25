@@ -107,6 +107,7 @@ def get_spike_train(image, model, sim_time):
     return out_spikes, n_out_spikes
     
 def plot_spike_train(image, model, sim_time, title, save_path):
+    plt.figure(figsize=(8, 8))
     out_spikes, n_out_spikes = get_spike_train(image, model, sim_time)
     for label, spike_train in enumerate(out_spikes[0]):
       for spike in spike_train:
