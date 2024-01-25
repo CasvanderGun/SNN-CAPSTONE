@@ -12,7 +12,6 @@ from experiments.mnist.Dataset import Dataset
 from bats.Monitors import *
 from bats.Layers import InputLayer, LIFLayer
 from bats.Losses import *
-from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
@@ -106,7 +105,7 @@ output_layer = LIFLayer(previous_layer=hidden_layer, n_neurons=N_OUTPUTS, tau_s=
                         name="Output layer")
 network.add_layer(output_layer)
 
-loss_fct = SpikeTimeWeighedMSE(target_false=TARGET_FALSE, target_true=TARGET_TRUE, decay_rate=DECAY_RATE)
+loss_fct = SpikeDecayLoss(target_false=TARGET_FALSE, target_true=TARGET_TRUE, decay_rate=DECAY_RATE)
 optimizer = AdamOptimizer(learning_rate=LEARNING_RATE)
 
 # Metrics

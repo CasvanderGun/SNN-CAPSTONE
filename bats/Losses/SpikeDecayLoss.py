@@ -11,7 +11,7 @@ This loss function will take the Mean Squared Error between the set targets and 
 The targets will be modified by the decay rate 
 '''
 
-class SpikeTimeWeighedMSE(AbstractLoss):
+class SpikeDecayLoss(AbstractLoss):
   # Finished, compied from: SpikeCountLoss.py, SpikeCountLossClass.py, SpikeTimeWeightedSoftmaxCrossEntropy.py
     def __init__(self, target_true: float, target_false: float, decay_rate: float):
 
