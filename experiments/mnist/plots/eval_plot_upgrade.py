@@ -7,11 +7,11 @@ from typing import Dict, List, Sequence
 import os
 
 # Specify the path to the directory
-directory_count_ttfs = Path(r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_count_eval_ttfs\train_multiple_runsv2')
-directory_ttfs_count = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_count\multiple_runs")
-directory_decay = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_decay_rate\multiple_runs")
-directory_ttfs_multi = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_ttfs")
-directory_ttfs_single = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\train_ttfs_eval_ttfs_single_spike")
+directory_count_ttfs = Path(r'C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\our_results\train_count_eval_ttfs\train_multiple_runsv2')
+directory_ttfs_count = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\our_results\train_ttfs_eval_count\multiple_runsv2")
+directory_decay = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\our_results\train_decay_rate\multiple_runs")
+directory_ttfs_multi = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\our_results\train_ttfs_eval_ttfs")
+directory_ttfs_single = Path(r"C:\Users\hanna\Downloads\SNN-CAPSTONE-1\results\our_results\train_ttfs_eval_ttfs_single_spike")
 num_runs = 5
 
 def load_files(dic_path):
@@ -233,8 +233,8 @@ save_path = "/Users/hanna/Downloads/new_plots"
 ######################################################################
 cTTFS = 'royalblue'
 cCOUNT = 'firebrick'
-cCT = 'rebeccapurple'
-cTC = 'coral'
+cCT = 'coral'
+cTC = 'rebeccapurple'
 cDECAY = 'green'
 
 ##########################################################################
@@ -290,7 +290,7 @@ if execute_loss:
 ################################################################################
 #########                     SILENT NEURONS PLOTS                     #########
 ################################################################################
-execute_silent = True  # Want to generate loss plot
+execute_silent = False  # Want to generate loss plot
 if execute_silent:
     silent_dfs_ttfs_single = [stats_dataframes_ttfs_single['silent_neurons_Output']]
 
