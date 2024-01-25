@@ -59,6 +59,7 @@ TARGET_TRUE = 15
 EXPORT_METRICS = True
 EXPORT_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/output_metrics")
 SAVE_DIR = Path("/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/best_model")
+SPIKETRAIN_DIR = Path('/kaggle/working/SNN-CAPSTONE/results/train_ttfs_eval_count/spike_trains')
 
 
 def weight_initializer(n_post: int, n_pre: int) -> cp.ndarray:
@@ -79,6 +80,8 @@ if __name__ == "__main__":
 
     if EXPORT_METRICS and not EXPORT_DIR.exists():
         EXPORT_DIR.mkdir()
+
+    SPIKETRAIN_DIR.mkdir(parents=True, exist_ok=True)
 
     # Dataset
     print("Loading datasets...")
@@ -273,6 +276,9 @@ if __name__ == "__main__":
         # Calculate average spike counts
         avg_spike_counts = {digit: np.mean(spike_counts[digit], axis=0) for digit in spike_counts}
         avg_output_spike_counts = {digit: np.mean(output_spike_counts[digit], axis=0) for digit in output_spike_counts}
+
+        image = get_image(0)
+        plot_spike_train(image, network, SIMULATION_TIME, f'spike train epoch {epoch + 1}', SPIKETRAIN_DIR)
 
         # Create a figure to visualize network activity and sparsity
         create_output_spike_count_map(avg_output_spike_counts, 10, 15, f'OUTPUTSpikeCountMap_10Neurons_TTFS_Count_Epoch{epoch + 1}', '/results/train_ttfs_eval_count', '/kaggle/working/SNN-CAPSTONE')
