@@ -16,7 +16,7 @@ from bats.Losses.SpikeTimeWeighedMSE import SpikeTimeWeighedMSE
 from bats.Network import Network
 from bats.Optimizers import *
 
-def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, export_path, root_path):
+def train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, export_path):
     # Dataset
     DATASET_PATH = Path("../../../datasets/mnist.npz")
 
@@ -274,4 +274,4 @@ path = "results/train_decay_rate/tuning/targets/Run_1"
 root_path = '/kaggle/working/SNN-CASPTONE/'
 
 print('running train_decay_rate()')
-train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path, root_path)
+train_decay_rate(epochs, decay_rate, simulation_time, target_true, target_false, root_path + path)
