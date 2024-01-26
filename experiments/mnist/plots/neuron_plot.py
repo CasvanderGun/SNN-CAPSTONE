@@ -27,7 +27,7 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         plt.ylabel('Label')
         plt.title(title)
         # save_path = f'/content/SNN-CAPSTONE/results/{experiment_name}/neuron_plots/{title}.png'
-        save_path = path + title
+        save_path = path / title
         plt.savefig(save_path)
         print(f"Neuron Plot saved to {save_path}")
 
@@ -56,7 +56,7 @@ def create_output_spike_count_map(avg_spike_counts: dict, amount_of_neurons_show
         plt.ylabel('Label')
         plt.title(title)
         # save_path = f'/content/SNN-CAPSTONE/results/{experiment_name}/neuron_plots/{title}.png'
-        save_path = path + title
+        save_path = path / title
         plt.savefig(save_path)
         print(f"Neuron Plot saved to {save_path}")
 
