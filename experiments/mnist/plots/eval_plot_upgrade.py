@@ -241,7 +241,7 @@ cDECAY = 'green'
 ##########################################################################
 #########                     ACCURACY PLOTS                     #########
 ##########################################################################
-execute_acc = False  # Want to generate accurary plots
+execute_acc = True  # Want to generate accurary plots
 if execute_acc:
     accuracy_dfs_all = get_dfs_to_list([stats_dataframes_count_e_ttfs, stats_dataframes_ttfs_e_count], "accuracy")
     accuracy_df_decay = get_dfs_to_list([stats_dataframes_decay], 'accuracy')
@@ -262,8 +262,9 @@ if execute_acc:
                               path=save_path, legend_outside_grid=True)
     create_line_plot_multiple(accuracy_df_decay, 'Epoch', 'mean', title="Test accuracy of decay loss function", ylabel="accuracy (%)", 
                               labels=accuracy_labels_decay, colors=[cDECAY], set_limit=True, blimit=95, path=save_path)
-    create_line_plot_multiple(accuracy_dfs_zoom, 'Epoch', 'mean', title="Zoom of test accuracy count and TTFS multi spike", ylabel="accuracy (%)", 
-                              labels=accuracy_labels_zoom, colors=[cCOUNT, cTTFS], set_limit=True, blimit=95, path=save_path)
+    create_line_plot_multiple(accuracy_dfs_all, 'Epoch', 'mean', title="Zoom of test accuracy count, TTFS multi spike and cross-evaluation", 
+                              ylabel="accuracy (%)", labels=accuracy_labels_all, colors=[cCOUNT, cCT, cTC, cTTFS], 
+                              set_limit=True, blimit=90, path=save_path)
     create_line_plot_multiple(accuracy_dfs_zoom2, 'Epoch', 'mean', title="Zoom of test accuracy Count, TTFS multi spike and Decay", 
                               ylabel="accuracy (%)", labels=accuracy_labels_zoom, colors=[cCOUNT, cTTFS, cDECAY], 
                               set_limit=True, blimit=95, rlimit=30, path=save_path)
