@@ -79,6 +79,10 @@ train_ttfs_eval_ttfs  train_count_eval_count
 ...
 ```
 
+## Looking at our results
+
+We've stored our results (the ones we've used for the presentation) within the results/our_results directory. This is not completely organized, but definitely organized enough for you to understand. This was mainly our workspace and is added as an extra. Some code for creating plots etc we didnt include as it was not relevant to the experiments. 
+
 
 ### Running the experiments
 
