@@ -334,6 +334,6 @@ if __name__ == "__main__":
         plot_spike_train(image, network, SIMULATION_TIME, f'/spike train epoch {epoch + 1}', SPIKETRAIN_DIR)
         
         # Create a figure to visualize network activity and sparsity
-        create_output_spike_count_map(avg_output_spike_counts, 10, 15, f'/OUTPUTSpikeCountMap_10Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
-        create_spike_count_map(avg_spike_counts, 800, 15, f'/SpikeCountMap_800Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
-        create_spike_count_map(avg_spike_counts, 100, 15, f'/SpikeCountMap_100Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
+        create_output_spike_count_map(avg_output_spike_counts, 10, 15, f'OUTPUTSpikeCountMap_10Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
+        create_spike_count_map(avg_spike_counts, 800, 15, f'SpikeCountMap_800Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
+        create_spike_count_map(avg_spike_counts, 100, 15, f'SpikeCountMap_100Neurons_Count_TTFS_Epoch{epoch + 1}', NEURONPLOT_DIR)
