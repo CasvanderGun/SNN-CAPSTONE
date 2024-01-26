@@ -164,7 +164,8 @@ data_dict_ttfs_single = make_data_dict(directory_ttfs_single, num_runs=1)
 metric_names_count = ['accuracy_train_count', 'loss_train_count', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
                       'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_ttfs_eval = ['accuracy_train_ttfs', 'loss_train_ttfs', 'silent_neurons', 'accuracy_count_test', 'accuracy_ttfs_test',
-                     'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output']
+                     'loss_count_test', 'loss_ttfs_test', 'weight_norm_Hidden', 'weight_norm_Output', 'silent_neurons_Hidden',
+                     'silent_neurons_Output']
 metric_names_simple = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'weight_norm_Hidden', 'weight_norm_Output']
 metric_names_ttfs = ['accuracy_test', 'accuracy_train', 'loss_test', 'loss_train', 'silent_neurons_Hidden',
                      'silent_neurons_Output','weight_norm_Hidden', 'weight_norm_Output']
@@ -290,7 +291,7 @@ if execute_loss:
 ################################################################################
 #########                     SILENT NEURONS PLOTS                     #########
 ################################################################################
-execute_silent = False  # Want to generate loss plot
+execute_silent = False  # Want to generate silent neurons plot
 if execute_silent:
     silent_dfs_ttfs_single = [stats_dataframes_ttfs_single['silent_neurons_Output']]
 
