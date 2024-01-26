@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
 
-def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: str, root_path: str) -> None:
+def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: str) -> None:
         """Creates a visual representation of the average spike counts per neuron in the hidden layer for each label and stores a png in the results folder
         args:
         - avg_spike_counts: input data, stored as a dict
@@ -27,12 +27,12 @@ def create_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int,
         plt.ylabel('Label')
         plt.title(title)
         # save_path = f'/content/SNN-CAPSTONE/results/{experiment_name}/neuron_plots/{title}.png'
-        save_path = root_path + path + "/neuron_plots/" + title
+        save_path = path + title
         plt.savefig(save_path)
         print(f"Neuron Plot saved to {save_path}")
 
 
-def create_output_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: str, root_path: str) -> None:
+def create_output_spike_count_map(avg_spike_counts: dict, amount_of_neurons_shown: int, vmax: int, title: str, path: str) -> None:
         """Creates a visual representation of the average spike counts per neuron in the hidden layer for each label and stores a png in the results folder
         args:
         - avg_spike_counts: input data, stored as a dict
@@ -56,7 +56,7 @@ def create_output_spike_count_map(avg_spike_counts: dict, amount_of_neurons_show
         plt.ylabel('Label')
         plt.title(title)
         # save_path = f'/content/SNN-CAPSTONE/results/{experiment_name}/neuron_plots/{title}.png'
-        save_path = root_path + path + "/neuron_plots/" + title
+        save_path = path + title
         plt.savefig(save_path)
         print(f"Neuron Plot saved to {save_path}")
 
