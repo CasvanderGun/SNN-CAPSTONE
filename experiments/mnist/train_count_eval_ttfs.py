@@ -64,7 +64,7 @@ TAU_LOSS = 0.005
 EXPORT_METRICS = True
 EXPORT_DIR = Path("../../results/train_count_eval_ttfs/output_metrics")
 SAVE_DIR = Path("../../results/train_count_eval_ttfs/best_model")
-SPIKETRAIN_DIR = Path('../../results/train_ttfs_eval_count/spike_trains')
+SPIKETRAIN_DIR = Path('../../results/train_count_eval_ttfs/spike_trains')
 NEURONPLOT_DIR = Path("../../results/train_count_eval_ttfs/neuron_plots")
 
 
