@@ -266,7 +266,7 @@ if execute_acc:
     create_line_plot_multiple(accuracy_dfs_zoom2, 'Epoch', 'mean', title="Zoom of test accuracy Count, TTFS multi spike and Decay", 
                               ylabel="accuracy (%)", labels=accuracy_labels_zoom, colors=[cCOUNT, cTTFS, cDECAY], 
                               set_limit=True, blimit=95, rlimit=30, path=save_path)
-    create_line_plot_multiple(accuracy_reproduce, 'Epoch', 'mean', title="Test accuracy reproduced from paper", ylabel="accuracy (%)", 
+    create_line_plot_multiple(accuracy_reproduce, 'Epoch', 'mean', title="Test accuracy reperformed from paper", ylabel="accuracy (%)", 
                               labels=accuracy_labels_reproduce, colors=[cCOUNT, "steelblue"], set_limit=True, blimit=80, path=save_path)
     create_line_plot_multiple(accuracy_ttfs_multi, 'Epoch', 'mean', title="Test accuracy TTFS with multi and single spike", ylabel="accuracy (%)", 
                               labels=['multi spike', 'single spike'], colors=[cTTFS, 'midnightblue'], set_limit=True, blimit=80, path=save_path)
